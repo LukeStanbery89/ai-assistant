@@ -1,5 +1,5 @@
 {
-    "name": "jarvis-v2",
+    "name": "jarvis",
     "private": true,
     "workspaces": [
         "client",

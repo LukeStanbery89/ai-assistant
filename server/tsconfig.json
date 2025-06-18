@@ -9,8 +9,14 @@
         "outDir": "./dist",
         "rootDir": ".",
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "jsx": "react-jsx"
     },
-    "include": ["server/**/*.ts", "client/**/*.{ts,tsx}"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
+    "include": [
+        "./**/*.ts",
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
 }
