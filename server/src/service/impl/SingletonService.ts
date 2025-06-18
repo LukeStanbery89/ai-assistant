@@ -1,8 +1,7 @@
-import { injectable } from 'tsyringe';
+import { injectable } from "tsyringe";
 
 @injectable()
 export class SingletonService {
-
     private timestamp: string;
 
     constructor() {

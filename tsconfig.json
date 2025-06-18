@@ -11,12 +11,6 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     },
-    "include": [
-        "server/**/*.ts",
-        "client/**/*.{ts,tsx}"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ]
+    "include": ["server/**/*.ts", "client/**/*.{ts,tsx}"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

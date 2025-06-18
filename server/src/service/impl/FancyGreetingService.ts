@@ -1,4 +1,4 @@
-import { IGreetingService } from '../IGreetingService';
+import { IGreetingService } from "../IGreetingService";
 
 export class FancyGreetingService implements IGreetingService {
     greet(name: string): string {

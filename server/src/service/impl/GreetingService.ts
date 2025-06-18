@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { IGreetingService } from '../IGreetingService';
+import { IGreetingService } from "../IGreetingService";
 
 @injectable()
 export class GreetingService implements IGreetingService {

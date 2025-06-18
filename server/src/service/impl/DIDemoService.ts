@@ -1,6 +1,6 @@
-import { container, injectable } from 'tsyringe';
-import { UserService } from './UserService';
-import { SingletonService } from './SingletonService';
+import { container, injectable } from "tsyringe";
+import { UserService } from "./UserService";
+import { SingletonService } from "./SingletonService";
 
 @injectable()
 export class DIDemoService {

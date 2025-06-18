@@ -1,5 +1,6 @@
 const importPlugin = require("eslint-plugin-import");
 const tsParser = require("@typescript-eslint/parser");
+const prettierPlugin = require("eslint-plugin-prettier");
 
 module.exports = [
     {
@@ -10,6 +11,12 @@ module.exports = [
                 project: "./tsconfig.json",
                 sourceType: "module",
             },
+        },
+        plugins: {
+            prettier: prettierPlugin,
+        },
+        rules: {
+            "prettier/prettier": "error",
         },
     },
     {

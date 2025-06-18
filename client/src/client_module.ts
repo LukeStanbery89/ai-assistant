@@ -1,1 +1,1 @@
-export default class ClientModuleClass {};
+export default class ClientModuleClass {}
