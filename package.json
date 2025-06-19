@@ -1,5 +1,5 @@
 {
-    "name": "jarvis",
+    "name": "ai-assistant",
     "private": true,
     "workspaces": [
         "client",
