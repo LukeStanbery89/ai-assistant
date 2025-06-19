@@ -1,4 +1,4 @@
-# Jarvis V2 – AI Assistant Monorepo
+# AI Assistant Monorepo
 
 This is a monorepo containing a React client and an Express server, both written in TypeScript.
 
@@ -6,7 +6,7 @@ This is a monorepo containing a React client and an Express server, both written
 
 ```
 ai-assistant
-├── client/                # React + Vite frontend
+├── client/                # Web frontend (React + Vite)
 │   ├── src/
 │   ├── public/
 │   ├── index.html
