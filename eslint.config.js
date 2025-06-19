@@ -4,7 +4,7 @@ const prettierPlugin = require("eslint-plugin-prettier");
 
 module.exports = [
     {
-        files: ["**/*.ts", "**/*.tsx"],
+        files: ["server/**/*.{ts,tsx}"],
         languageOptions: {
             parser: tsParser,
             parserOptions: {
@@ -20,24 +20,10 @@ module.exports = [
         },
     },
     {
-        plugins: {
-            import: importPlugin,
-        },
-        files: ["client/**/*.{js,ts,jsx,tsx}"],
-        rules: {
-            "no-restricted-imports": [
-                "error",
-                {
-                    patterns: ["server/*"],
-                },
-            ],
-        },
-    },
-    {
-        plugins: {
-            import: importPlugin,
-        },
         files: ["server/**/*.{js,ts,jsx,tsx}"],
+        plugins: {
+            import: importPlugin,
+        },
         rules: {
             "no-restricted-imports": [
                 "error",
