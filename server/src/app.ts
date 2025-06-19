@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import "dotenv/config";
-import "./loaders";
 import express from "express";
 import indexRoutes from "./routes";
 import { container } from "tsyringe";
+import http from "http";
+import { initLoaders } from "./loaders";
 import { DIDemoService } from "./service/impl/DIDemoService";
 
 const app = express();
@@ -16,7 +17,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/", indexRoutes);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+
+// Create HTTP server and attach Express app
+const server = http.createServer(app);
+
+// Initialize all loaders (DI, WebSocket, etc.)
+initLoaders(server);
+
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 
     container.resolve(DIDemoService).demo();

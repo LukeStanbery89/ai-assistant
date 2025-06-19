@@ -1,10 +1,11 @@
-import { container } from "tsyringe";
-import { SingletonService } from "../service/impl/SingletonService";
-import { IGreetingService } from "../service/IGreetingService";
-import { FancyGreetingService } from "../service/impl/FancyGreetingService";
+import { Server as HTTPServer } from "http";
+import { initWebSocket } from "./websocket";
+import { initDI } from "./di";
+import wsEvents from "../ws-events";
 
-// Register DI classes
-container.registerSingleton(SingletonService);
-container.register<IGreetingService>("IGreetingService", {
-    useClass: FancyGreetingService,
-});
+export function initLoaders(server: HTTPServer) {
+    initDI();
+    initWebSocket(server, {
+        events: wsEvents,
+    });
+}
