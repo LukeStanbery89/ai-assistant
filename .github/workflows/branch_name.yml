@@ -1,0 +1,15 @@
+name: 'Enforce Branch Naming Convention'
+on:
+  create:
+    branches:
+      - '*'
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          if [[ ! "${GITHUB_REF##*/}" =~ ^(feature|fix|chore)/.+$ ]]; then
+            echo "Branch name must start with feature/, bugfix/, or hotfix/"
+            exit 1
+          fi
