@@ -1,5 +1,5 @@
 import { Server as HTTPServer } from "http";
-import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer, WebSocket, RawData } from "ws";
 
 type EventHandler = (ws: WebSocket, payload: any) => void;
 
@@ -20,17 +20,20 @@ function defaultConnectionHandler(ws: WebSocket) {
 export function initWebSocket(server: HTTPServer, options: WebSocketOptions = {}) {
     const wss = new WebSocketServer({ server });
 
-    wss.on("connection", (ws) => {
+    wss.on("connection", (ws: WebSocket) => {
         (options.onConnection || defaultConnectionHandler)(ws);
 
-        ws.on("message", (data) => {
+        ws.on("message", (data: RawData) => {
             let msg;
             try {
                 msg = JSON.parse(data.toString());
             } catch {
+                console.error("WebSocket Error: Invalid JSON");
                 ws.send(JSON.stringify({ type: "error", payload: "Invalid JSON" }));
                 return;
             }
+            console.log("Received WebSocket event:", msg);
+
             const { type, payload } = msg;
             const handler = options.events?.[type];
             if (handler) {
