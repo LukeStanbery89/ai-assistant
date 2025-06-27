@@ -6,9 +6,10 @@
     - [x] PR builds
     - [x] Main branch protection
 - [ ] Implement a simple text chat client (REPL) for user input/output
-    - [ ] Set up boilerplate client
+    - [x] Set up boilerplate client
         - [x] Set up React / Vite development environment
         - [x] Set up test framework
+        - [x] Set up routing
     - [ ] Set up CLI input loop
     - [ ] Display server responses
     - [ ] Handle basic input validation/errors
