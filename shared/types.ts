@@ -1,0 +1,1 @@
+export type WebSocketEventPayload = string | number | boolean | null;

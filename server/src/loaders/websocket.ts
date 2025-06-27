@@ -1,7 +1,8 @@
 import { Server as HTTPServer } from "http";
 import { WebSocketServer, WebSocket, RawData } from "ws";
+import { WebSocketEventPayload } from "../../../shared/types";
 
-type EventHandler = (ws: WebSocket, payload: any) => void;
+type EventHandler = (ws: WebSocket, payload: WebSocketEventPayload) => void;
 
 interface WebSocketEventMap {
     [eventType: string]: EventHandler;
