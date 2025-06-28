@@ -1,3 +1,6 @@
-node_modules/
 .env
+.claude/
+node_modules/
 coverage/
+dist/
+client/dist/
