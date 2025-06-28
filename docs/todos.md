@@ -10,7 +10,9 @@
         - [x] Set up React / Vite development environment
         - [x] Set up test framework
         - [x] Set up routing
-    - [ ] Set up CLI input loop
+    - [ ] Set up chat input loop framework
+    - [ ] Set up CLI REPL client based on chat input loop framework for use in the terminal
+    - [ ] Set up web chat client based on chat input loop framework for use in the web browser
     - [ ] Display server responses
     - [ ] Handle basic input validation/errors
 - [ ] Implement a server that receives user prompts and returns LLM-generated responses
@@ -18,7 +20,7 @@
         - [x] Set up DI framework
         - [x] Set up linting
         - [x] Set up test framework
-        - [ ] Set up Husky + pre-push hook
+        - [x] Set up Husky + pre-push hook
     - [ ] Implement prompt endpoint
     - [ ] Integrate with LLM API
     - [ ] Return responses to client

@@ -1,8 +1,11 @@
 import { Server as HTTPServer } from "http";
 import { WebSocketServer, WebSocket, RawData } from "ws";
-import { WebSocketEventPayload } from "../../../shared/types";
+import { WebSocketEventPayload, ConversationCommand } from "../../../shared/types";
 
-type EventHandler = (ws: WebSocket, payload: WebSocketEventPayload) => void;
+// Union type for all possible event payloads
+type AllEventPayloads = WebSocketEventPayload | ConversationCommand;
+
+type EventHandler = (ws: WebSocket, payload: AllEventPayloads) => void | Promise<void>;
 
 interface WebSocketEventMap {
     [eventType: string]: EventHandler;

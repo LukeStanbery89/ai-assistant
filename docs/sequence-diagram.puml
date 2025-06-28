@@ -1,0 +1,130 @@
+@startuml AI Assistant Sequence Diagram
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam sequenceParticipant {
+    BackgroundColor #E1F5FE
+    BorderColor #0277BD
+}
+
+title AI Assistant Application Flow
+
+actor "User" as user
+participant "Client\n(Terminal/Browser/Voice)" as client
+participant "WebSocket\nHandler" as ws
+participant "Conversation\nService" as conv
+participant "Intent\nAnalyzer" as intent
+participant "Input\nParser" as parser
+participant "Module\nRegistry" as registry
+participant "Task Module\n(Weather/IoT/Search)" as module
+participant "MCP Server" as mcp
+participant "RAG Chain" as rag
+participant "LLM Service" as llm
+participant "User Context\nManager" as context
+
+note over client, context
+    **Multi-Client Architecture**
+    - Terminal REPL: Text-based command interface
+    - Browser Chat: ChatGPT-style web interface  
+    - Voice Client: Wake phrase + STT/TTS
+end note
+
+group Voice Client Initialization (Voice Only)
+    client -> client: Listen for wake phrase
+    client -> client: Voice/Face recognition\n(identify user)
+end
+
+group User Interaction
+    user -> client: Input prompt\n(text/voice)
+    
+    alt Voice Input
+        client -> client: Convert speech to text\n(STT)
+    end
+    
+    client -> ws: Send ConversationCommand\n{sessionId, message, clientType, userId}
+    
+    ws -> conv: processMessage(sessionId, message, userId)
+    
+    conv -> context: getUserContext(userId)
+    context --> conv: UserContext{preferences, history, state}
+    
+    conv -> intent: analyzeIntent(message)
+    intent --> conv: MessageIntent\n(weather, iot, search, chat, etc.)
+    
+    conv -> parser: parseInputs(message, intent)
+    parser --> conv: ParsedInputs\n{targetDevice?, targetValue?, location?, etc.}
+    
+    conv -> registry: findModule(intent)
+    registry --> conv: TaskModule instance
+    
+    conv -> module: execute(ParsedInputs, UserContext)
+    
+    group Module Processing
+        alt Requires External Data
+            module -> mcp: queryMCPServer(params)
+            mcp --> module: ContextualData
+        end
+        
+        module -> module: Process task logic
+        module --> conv: TaskResult\n{success, data, message}
+    end
+    
+    group Response Generation
+        conv -> rag: buildContext(userPrompt, taskResult, userContext)
+        rag -> mcp: getRelevantContext()
+        mcp --> rag: AdditionalContext
+        rag --> conv: EnrichedContext
+        
+        conv -> llm: generateResponse(userPrompt, taskResult, enrichedContext)
+        llm --> conv: HumanLikeResponse
+    end
+    
+    conv -> context: updateUserContext(userId, newState)
+    conv --> ws: ConversationMessage[]\n{content, metadata, timestamp}
+    
+    ws --> client: Response messages
+    
+    alt Voice Client
+        client -> client: Convert text to speech\n(TTS)
+        client -> user: Audio response
+    else Text Client
+        client -> user: Text response
+    end
+end
+
+group Multi-User Support
+    note over context
+        **User Context Management**
+        - Each user has unique context
+        - Conversation history per user
+        - Personal preferences and state
+        - Cross-session persistence
+    end note
+end
+
+group Module Architecture
+    note over registry, module
+        **Pluggable Module System**
+        - Common ITaskModule interface
+        - Weather: API integration for forecasts
+        - IoT: Smart home device control
+        - Search: Web/knowledge base queries
+        - Chat: General conversation handling
+        
+        **Standard Interface:**
+        - Input: ParsedInputs + UserContext
+        - Output: TaskResult with structured data
+    end note
+end
+
+group RAG + MCP Integration
+    note over rag, mcp
+        **Context Enhancement**
+        - RAG: Retrieval-Augmented Generation
+        - MCP: Model Context Protocol servers
+        - Provides rich context for LLM responses
+        - Enables domain-specific knowledge
+    end note
+end
+
+@enduml

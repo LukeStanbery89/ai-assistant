@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
-import { WebSocketEventPayload } from "../../../shared/types";
+import { WebSocketEventPayload, ConversationCommand } from "../../../shared/types";
 
-export default function ping(ws: WebSocket, payload: WebSocketEventPayload) {
+export default function ping(ws: WebSocket, payload: WebSocketEventPayload | ConversationCommand) {
     ws.send(JSON.stringify({ type: "pong", payload: null }));
 }
