@@ -1,13 +1,9 @@
-#!/usr/bin/env node
-
-// TODO: Split CLI script and `CLIRepl` class into separate files.
-
 import * as readline from 'readline';
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 import { ConversationCommand, ConversationMessage, WebSocketEventTypes } from '../../../shared/types';
 
-class CLIRepl {
-    private ws: WebSocket | null = null;
+export class CLIRepl {
+    private ws: WebSocket.default | null = null;
     private rl: readline.Interface;
     private sessionId: string;
     private userId: string;
@@ -86,7 +82,7 @@ class CLIRepl {
 
     private connectToServer(): Promise<void> {
         return new Promise((resolve) => {
-            this.ws = new WebSocket('ws://localhost:3000');
+            this.ws = new WebSocket.default('ws://localhost:3000');
 
             this.ws.on('open', () => {
                 console.log('🔗 WebSocket connected');
@@ -94,7 +90,7 @@ class CLIRepl {
                 resolve();
             });
 
-            this.ws.on('message', (data: WebSocket.Data) => {
+            this.ws.on('message', (data: WebSocket.default.Data) => {
                 try {
                     const event: WebSocketEventTypes = JSON.parse(data.toString());
                     this.handleServerMessage(event);
@@ -141,7 +137,7 @@ class CLIRepl {
     }
 
     private sendMessage(message: string): void {
-        if (!this.ws || WebSocket.OPEN !== this.ws.readyState) {
+        if (!this.ws || WebSocket.default.OPEN !== this.ws.readyState) {
             console.log('❌ Not connected to server');
             this.rl.prompt();
             return;
@@ -176,14 +172,3 @@ class CLIRepl {
         return 'cli-session-' + Math.random().toString(36).substring(2) + Date.now().toString(36);
     }
 }
-
-// Start the REPL if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-    const repl = new CLIRepl();
-    repl.start().catch((error) => {
-        console.error('Failed to start REPL:', error);
-        process.exit(1);
-    });
-}
-
-export default CLIRepl;
