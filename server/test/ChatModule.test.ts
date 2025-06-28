@@ -1,4 +1,4 @@
-import { ChatModule } from '../src/service/modules/ChatModule';
+import { ChatModule } from '../src/service/modules/impl/ChatModule';
 import { ParsedInputs, MessageIntent } from '../../shared/types';
 
 describe('ChatModule', () => {

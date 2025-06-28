@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
-import { ConversationMessage, ConversationCommand, MessageIntent } from "../../../shared/types";
-import { IConversationService } from "./IConversationService";
+import { ConversationMessage, ConversationCommand, MessageIntent } from "../../../../shared/types";
+import { IConversationService } from "../IConversationService";
 
 @injectable()
 export class ConversationService implements IConversationService {

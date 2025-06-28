@@ -1,4 +1,4 @@
-import { ConversationService } from '../src/service/ConversationService';
+import { ConversationService } from '../src/service/impl/ConversationService';
 import { ConversationCommand, MessageIntent } from '../../shared/types';
 
 describe('ConversationService', () => {

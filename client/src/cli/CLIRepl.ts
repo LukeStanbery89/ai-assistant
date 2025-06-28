@@ -1,14 +1,22 @@
 import * as readline from 'readline';
 import WebSocket from 'ws';
+import { randomUUID } from 'crypto';
+// TODO: Fix type-only imports when verbatimModuleSyntax is enabled
 import { ConversationCommand, ConversationMessage, WebSocketEventTypes } from '../../../shared/types';
 
 export class CLIRepl {
+    // WebSocket starts as null and is initialized during connection
     private ws: WebSocket | null = null;
     private rl: readline.Interface;
     private sessionId: string;
     private userId: string;
     private isConnected = false;
     private isWaitingForResponse = false;
+    private connectionTimeout: NodeJS.Timeout | null = null;
+    private isShuttingDown = false;
+
+    // Connection timeout constant
+    private static readonly CONNECTION_TIMEOUT_MS = 5000;
 
     constructor() {
         this.sessionId = this.generateSessionId();
@@ -82,11 +90,16 @@ export class CLIRepl {
 
     private connectToServer(): Promise<void> {
         return new Promise((resolve) => {
+            // TODO: Read WebSocket address/port from config or .env file
             this.ws = new WebSocket('ws://localhost:3000');
 
             this.ws.on('open', () => {
                 console.log('🔗 WebSocket connected');
                 this.isConnected = true;
+                if (this.connectionTimeout) {
+                    clearTimeout(this.connectionTimeout);
+                    this.connectionTimeout = null;
+                }
                 resolve();
             });
 
@@ -110,16 +123,20 @@ export class CLIRepl {
             this.ws.on('error', (error) => {
                 console.log('\n❌ WebSocket error:', error.message);
                 this.isConnected = false;
+                if (this.connectionTimeout) {
+                    clearTimeout(this.connectionTimeout);
+                    this.connectionTimeout = null;
+                }
                 resolve();
             });
 
-            // Timeout after 5 seconds
-            setTimeout(() => {
+            // Timeout after configured duration
+            this.connectionTimeout = setTimeout(() => {
                 if (!this.isConnected) {
                     console.log('⏰ Connection timeout');
                     resolve();
                 }
-            }, 5000);
+            }, CLIRepl.CONNECTION_TIMEOUT_MS);
         });
     }
 
@@ -160,7 +177,17 @@ export class CLIRepl {
     }
 
     private shutdown(): void {
+        // Shutting down flag prevents double "Goodbye" message
+        if (this.isShuttingDown) {
+            return;
+        }
+        this.isShuttingDown = true;
+
         console.log('\n👋 Goodbye!');
+        if (this.connectionTimeout) {
+            clearTimeout(this.connectionTimeout);
+            this.connectionTimeout = null;
+        }
         if (this.ws) {
             this.ws.close();
         }
@@ -169,6 +196,17 @@ export class CLIRepl {
     }
 
     private generateSessionId(): string {
-        return 'cli-session-' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+        return 'cli-session-' + randomUUID();
+    }
+
+    public cleanup(): void {
+        if (this.connectionTimeout) {
+            clearTimeout(this.connectionTimeout);
+            this.connectionTimeout = null;
+        }
+        if (this.ws) {
+            this.ws.close();
+        }
+        this.rl.close();
     }
 }

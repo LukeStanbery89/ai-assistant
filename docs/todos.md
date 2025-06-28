@@ -9,6 +9,7 @@
     - [x] Set up boilerplate client
         - [x] Set up React / Vite development environment
         - [x] Set up test framework
+        - [ ] Set up test coverage
         - [x] Set up routing
     - [ ] Set up chat input loop framework
     - [ ] Set up CLI REPL client based on chat input loop framework for use in the terminal

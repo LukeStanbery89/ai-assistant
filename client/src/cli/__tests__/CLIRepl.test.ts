@@ -46,6 +46,12 @@ describe('CLIRepl', () => {
         cliRepl = new CLIRepl();
     });
 
+    afterEach(() => {
+        if (cliRepl) {
+            cliRepl.cleanup();
+        }
+    });
+
     afterAll(() => {
         mockConsoleLog.mockRestore();
         mockConsoleError.mockRestore();

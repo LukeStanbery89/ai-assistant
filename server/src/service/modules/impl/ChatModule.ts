@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
-import { ParsedInputs, TaskResult, MessageIntent } from "../../../../shared/types";
-import { ITaskModule } from "./ITaskModule";
+import { ParsedInputs, TaskResult, MessageIntent } from "../../../../../shared/types";
+import { ITaskModule } from "../ITaskModule";
 
 @injectable()
 export class ChatModule implements ITaskModule {

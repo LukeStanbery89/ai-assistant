@@ -3,7 +3,7 @@ import { SingletonService } from "../service/impl/SingletonService";
 import { IGreetingService } from "../service/IGreetingService";
 import { FancyGreetingService } from "../service/impl/FancyGreetingService";
 import { IConversationService } from "../service/IConversationService";
-import { ConversationService } from "../service/ConversationService";
+import { ConversationService } from "../service/impl/ConversationService";
 
 export function initDI() {
     container.registerSingleton(SingletonService);
