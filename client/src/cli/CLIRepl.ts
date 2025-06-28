@@ -1,9 +1,9 @@
 import * as readline from 'readline';
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
 import { ConversationCommand, ConversationMessage, WebSocketEventTypes } from '../../../shared/types';
 
 export class CLIRepl {
-    private ws: WebSocket.default | null = null;
+    private ws: WebSocket | null = null;
     private rl: readline.Interface;
     private sessionId: string;
     private userId: string;
@@ -82,7 +82,7 @@ export class CLIRepl {
 
     private connectToServer(): Promise<void> {
         return new Promise((resolve) => {
-            this.ws = new WebSocket.default('ws://localhost:3000');
+            this.ws = new WebSocket('ws://localhost:3000');
 
             this.ws.on('open', () => {
                 console.log('🔗 WebSocket connected');
@@ -90,7 +90,7 @@ export class CLIRepl {
                 resolve();
             });
 
-            this.ws.on('message', (data: WebSocket.default.Data) => {
+            this.ws.on('message', (data: WebSocket.Data) => {
                 try {
                     const event: WebSocketEventTypes = JSON.parse(data.toString());
                     this.handleServerMessage(event);
@@ -137,7 +137,7 @@ export class CLIRepl {
     }
 
     private sendMessage(message: string): void {
-        if (!this.ws || WebSocket.default.OPEN !== this.ws.readyState) {
+        if (!this.ws || WebSocket.OPEN !== this.ws.readyState) {
             console.log('❌ Not connected to server');
             this.rl.prompt();
             return;
