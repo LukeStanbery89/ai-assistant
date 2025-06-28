@@ -1,8 +1,7 @@
 import * as readline from 'readline';
 import WebSocket from 'ws';
 import { randomUUID } from 'crypto';
-// TODO: Fix type-only imports when verbatimModuleSyntax is enabled
-import { ConversationCommand, ConversationMessage, WebSocketEventTypes } from '../../../shared/types';
+import type { ConversationCommand, ConversationMessage, WebSocketEventTypes } from '../../../shared/types';
 
 export class CLIRepl {
     // WebSocket starts as null and is initialized during connection

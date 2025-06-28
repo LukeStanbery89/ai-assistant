@@ -170,9 +170,9 @@ enum MessageIntent {
 ### Phase 4: Additional Clients
 
 #### Step 10: Terminal REPL Client
-- [ ] Create Node.js CLI application
-- [ ] Implement readline interface
-- [ ] Add WebSocket connection to server
+- [x] Create Node.js CLI application
+- [x] Implement readline interface
+- [x] Add WebSocket connection to server
 - [ ] Build command history and auto-completion
 
 #### Step 11: Voice Client (Future)
@@ -198,7 +198,7 @@ enum MessageIntent {
 - [x] Basic Express server with TypeScript
 
 ### In Progress (docs/todos.md Phase 1)
-- [ ] Implement a simple text chat client (REPL) for user input/output
+- [x] Implement a simple text chat client (REPL) for user input/output
 - [ ] Implement a server that receives user prompts and returns LLM-generated responses
 
 ## Files Created/Modified

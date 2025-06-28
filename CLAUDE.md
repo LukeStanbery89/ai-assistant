@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Getting Started
+
+**IMPORTANT**: At the beginning of each new Claude Code CLI session, review the contents of the `docs/` directory to understand the current project state, implementation plan, and todo list. This provides essential context about:
+- Overall architecture and goals (`docs/implementation-plan.md`)
+- Current progress and next priorities (`docs/todos.md`)
+- System flow and component interactions (`docs/sequence-diagram.puml`)
+
 ## Development Commands
 
 ### GitHub CLI Commands

@@ -11,8 +11,8 @@
         - [x] Set up test framework
         - [ ] Set up test coverage
         - [x] Set up routing
-    - [ ] Set up chat input loop framework
-    - [ ] Set up CLI REPL client based on chat input loop framework for use in the terminal
+    - [x] Set up chat input loop framework
+    - [x] Set up CLI REPL client based on chat input loop framework for use in the terminal
     - [ ] Set up web chat client based on chat input loop framework for use in the web browser
     - [ ] Display server responses
     - [ ] Handle basic input validation/errors
@@ -30,7 +30,7 @@
 - [ ] Specify and document API endpoints (REST/SSE) with request/response examples
 - [ ] Add basic error handling and logging
 - [ ] Write unit and integration tests for core functionality
-    - [ ] Unit tests for client
+    - [x] Unit tests for client
     - [ ] Unit tests for server
     - [ ] Integration tests for end-to-end flow
 - [ ] Integrate with APM (Application Performance Monitoring) software
