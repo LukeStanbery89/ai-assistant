@@ -4,6 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+### GitHub CLI Commands
+
+**Reading PR Inline Comments**
+To read inline review comments on a pull request, use:
+```bash
+gh api \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  /repos/LukeStanbery89/ai-assistant/pulls/[PR_NUMBER]/comments
+```
+Replace `[PR_NUMBER]` with the actual PR number. This returns detailed JSON with all inline comments, including the file path, line number, and comment body.
+
 ### Root Level Commands
 - `npm run dev` - Start both client and server in development mode
 - `npm run build` - Build both workspaces  
