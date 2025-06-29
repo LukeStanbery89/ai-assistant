@@ -2,6 +2,7 @@ import WebSocket from "ws";
 import { container } from "tsyringe";
 import { ConversationCommand, WebSocketEventPayload } from "../../../shared/types";
 import { IConversationService } from "../service/IConversationService";
+import { logger } from "../utils";
 
 // Type guard to check if payload is a ConversationCommand
 function isConversationCommand(
@@ -23,6 +24,9 @@ export const handleConversation = async (
 ) => {
     try {
         if (!isConversationCommand(payload)) {
+            logger.warn("Invalid conversation command received", {
+                payload: typeof payload === "object" ? Object.keys(payload || {}) : typeof payload,
+            });
             ws.send(
                 JSON.stringify({
                     type: "error",
@@ -35,8 +39,21 @@ export const handleConversation = async (
             return;
         }
 
+        logger.info("Processing conversation message", {
+            sessionId: payload.sessionId,
+            userId: payload.userId,
+            clientType: payload.clientType,
+            messageLength: payload.message.length,
+        });
+
         const conversationService = container.resolve<IConversationService>("IConversationService");
         const response = await conversationService.processMessage(payload);
+
+        logger.debug("Conversation message processed successfully", {
+            sessionId: payload.sessionId,
+            responseId: response.id,
+            responseLength: response.content.length,
+        });
 
         ws.send(
             JSON.stringify({
@@ -45,7 +62,11 @@ export const handleConversation = async (
             }),
         );
     } catch (error) {
-        console.error("Error handling conversation:", error);
+        logger.error("Failed to process conversation message", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            payload: typeof payload === "object" ? payload : undefined,
+        });
         ws.send(
             JSON.stringify({
                 type: "error",

@@ -5,44 +5,45 @@
     - [x] README.md / Documentation
     - [x] PR builds
     - [x] Main branch protection
-- [ ] Implement a simple text chat client (REPL) for user input/output
+- [x] Implement a simple text chat client (REPL) for user input/output
     - [x] Set up boilerplate client
         - [x] Set up React / Vite development environment
         - [x] Set up test framework
-        - [ ] Set up test coverage
+        - [x] Set up test coverage
         - [x] Set up routing
     - [x] Set up chat input loop framework
     - [x] Set up CLI REPL client based on chat input loop framework for use in the terminal
-    - [ ] Set up web chat client based on chat input loop framework for use in the web browser
-    - [ ] Display server responses
-    - [ ] Handle basic input validation/errors
+    - [x] Set up web chat client based on chat input loop framework for use in the web browser
+    - [x] Display server responses
+    - [x] Handle basic input validation/errors
 - [ ] Implement a server that receives user prompts and returns LLM-generated responses
     - [x] Set up boilerplate server
         - [x] Set up DI framework
         - [x] Set up linting
         - [x] Set up test framework
+        - [x] Set up test coverage
         - [x] Set up Husky + pre-push hook
-    - [ ] Implement prompt endpoint
+    - [x] Implement prompt endpoint
     - [ ] Integrate with LLM API
     - [ ] Return responses to client
 - [ ] Containerize the app with Docker
 - [ ] Define and document JSON schemas for user prompt and server response payloads
 - [ ] Specify and document API endpoints (REST/SSE) with request/response examples
-- [ ] Add basic error handling and logging
+- [x] Enhance app logging
 - [ ] Write unit and integration tests for core functionality
     - [x] Unit tests for client
-    - [ ] Unit tests for server
+    - [x] Unit tests for server
     - [ ] Integration tests for end-to-end flow
 - [ ] Integrate with APM (Application Performance Monitoring) software
 - [ ] Perform audit to ensure that the codebase is clean, modular, and loosely coupled
 - [ ] Ensure 85%+ line test coverage
 
 ## Phase 2: Look and Feel
-- [ ] Design and implement a clean, intuitive UI for chat interactions
-    - [ ] Design UI mockups
-    - [ ] Implement chat window
-    - [ ] Implement input controls
-    - [ ] Style with CSS/framework
+- [x] Design and implement a clean, intuitive UI for chat interactions
+    - [x] Design UI mockups
+    - [x] Implement chat window
+    - [x] Implement input controls
+    - [x] Style with CSS/framework
 - [ ] Integrate speech-to-text (STT) for user voice input
     - [ ] Research/select STT library/service
     - [ ] Implement STT integration

@@ -184,9 +184,12 @@ enum MessageIntent {
 ## Code Style Requirements
 
 - **Yoda Notation**: Use for equality evaluations (`'text' === inputMode`)
-- **Interface-First Design**: Define interfaces before implementations
+- **Interface-First Design**: Define interfaces before implementations  
 - **Dependency Injection**: Use TSyringe throughout
 - **Type Safety**: Leverage TypeScript strict mode
+- **Double Quotes**: Enforced via ESLint for all string literals
+- **Test Coverage**: Minimum 45% coverage for client, 25% for server infrastructure
+- **Structured Logging**: Winston-based logging with timestamps, colored output, and metadata
 
 ## Current Project State
 
@@ -196,6 +199,10 @@ enum MessageIntent {
 - [x] Dependency injection setup with TSyringe
 - [x] React client with routing
 - [x] Basic Express server with TypeScript
+- [x] Test coverage reporting for both client and server workspaces
+- [x] Enhanced structured logging system with Winston (colored output, timestamps, metadata)
+- [x] Mobile-responsive UI improvements with proper navigation and clear chat functionality
+- [x] ESLint rules enforcement for code quality (double quotes, consistent formatting)
 
 ### In Progress (docs/todos.md Phase 1)
 - [x] Implement a simple text chat client (REPL) for user input/output
@@ -226,6 +233,32 @@ enum MessageIntent {
 - `server/src/ws-events/index.ts` - Add conversation handler
 - `client/src/App.tsx` - Add chat route
 - `shared/types.ts` - Add conversation types
+
+## Recent Infrastructure Improvements
+
+### Test Coverage Implementation
+- **Client Coverage**: Configured Jest with 45% coverage thresholds for branches, functions, lines, and statements
+- **Server Coverage**: Configured Jest with 25-30% coverage thresholds appropriate for infrastructure code
+- **Coverage Reports**: Generate `text`, `lcov`, and `html` formats for comprehensive analysis
+- **Coverage Commands**: Added `npm run test` with coverage enabled by default
+
+### Enhanced Logging System
+- **Winston Integration**: Replaced all `console.log`/`console.error` with structured Winston logging
+- **Colored Output**: White for info, orange for warnings, red for errors using terminal color codes
+- **Structured Format**: Timestamp | Level | Message | Metadata columns for tidy output
+- **Contextual Metadata**: Enhanced logging throughout WebSocket handlers, conversation processing, and application startup
+- **Log Locations**: Comprehensive logging in `server/src/utils/logger.ts`, WebSocket events, and main application entry points
+
+### Mobile Responsiveness Improvements
+- **Navigation**: Hidden "AI Assistant" text on mobile displays using `hidden sm:inline` Tailwind classes
+- **Clear Chat Button**: Icon-only display on mobile with `hidden sm:inline` for text, includes trash icon SVG
+- **Subtitle**: Hidden conversation partner subtitle on mobile using `hidden sm:block`
+- **Responsive Design**: Maintained full functionality while optimizing for smaller screen sizes
+
+### Code Quality Enhancements
+- **ESLint Rules**: Added double quotes enforcement rule with escape avoidance option
+- **Consistent Formatting**: Applied formatting fixes across all TypeScript and TSX files
+- **Git Workflow**: Proper branch management with feature branches and pull request workflows
 
 ## Next Session Priorities
 

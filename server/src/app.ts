@@ -2,10 +2,9 @@ import "reflect-metadata";
 import "dotenv/config";
 import express from "express";
 import indexRoutes from "./routes";
-import { container } from "tsyringe";
 import http from "http";
 import { initLoaders } from "./loaders";
-import { DIDemoService } from "./service/impl/DIDemoService";
+import { logger } from "./utils";
 
 const app = express();
 
@@ -25,7 +24,8 @@ const server = http.createServer(app);
 initLoaders(server);
 
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-
-    container.resolve(DIDemoService).demo();
+    logger.info("Server started successfully", {
+        port: PORT,
+        environment: process.env.NODE_ENV || "development",
+    });
 });

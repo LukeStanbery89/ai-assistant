@@ -27,5 +27,16 @@ module.exports = {
         '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
     },
     testTimeout: 5000,
-    verbose: true
+    verbose: true,
+    collectCoverage: true,
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'lcov', 'html'],
+    coverageThreshold: {
+        global: {
+            branches: 45,
+            functions: 45,
+            lines: 45,
+            statements: 45
+        }
+    }
 };

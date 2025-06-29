@@ -124,12 +124,7 @@ describe("WebSocket conversation handler", () => {
             const error = new Error("Service unavailable");
             mockConversationService.processMessage.mockRejectedValue(error);
 
-            // Mock console.error to avoid test output
-            const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-
             await handleConversation(mockWs as any, command);
-
-            expect(consoleSpy).toHaveBeenCalledWith("Error handling conversation:", error);
             expect(mockWs.send).toHaveBeenCalledWith(
                 JSON.stringify({
                     type: "error",
@@ -139,8 +134,6 @@ describe("WebSocket conversation handler", () => {
                     },
                 }),
             );
-
-            consoleSpy.mockRestore();
         });
 
         it("should handle unknown errors gracefully", async () => {
@@ -153,9 +146,6 @@ describe("WebSocket conversation handler", () => {
 
             mockConversationService.processMessage.mockRejectedValue("unknown error");
 
-            // Mock console.error to avoid test output
-            const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-
             await handleConversation(mockWs as any, command);
 
             expect(mockWs.send).toHaveBeenCalledWith(
@@ -167,8 +157,6 @@ describe("WebSocket conversation handler", () => {
                     },
                 }),
             );
-
-            consoleSpy.mockRestore();
         });
     });
 });

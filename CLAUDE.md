@@ -26,7 +26,9 @@ Replace `[PR_NUMBER]` with the actual PR number. This returns detailed JSON with
 ### Root Level Commands
 - `npm run dev` - Start both client and server in development mode
 - `npm run build` - Build both workspaces  
-- `npm run test` - Run all tests across workspaces
+- `npm run test` - Run all tests across workspaces with coverage reports
+- `npm run test:client` - Run only client tests with coverage
+- `npm run test:server` - Run only server tests with coverage
 - `npm run lint` - Lint all code
 - `npm run lint:fix` - Auto-fix linting issues
 - `npm run format` - Format code with Prettier
@@ -37,9 +39,24 @@ Replace `[PR_NUMBER]` with the actual PR number. This returns detailed JSON with
 - `npm run build --workspace=client` - Build client with TypeScript and Vite
 - `npm run build --workspace=server` - Build server with TypeScript compiler
 
-### Testing
-- Server tests use Jest with `npm run test` in the server workspace
-- Client currently has placeholder test command (no tests implemented)
+### Testing & Coverage
+- **Coverage Reports**: Both client and server generate comprehensive test coverage reports
+  - Console output shows coverage tables with percentages and uncovered lines
+  - HTML reports generated in `coverage/` directories for detailed analysis
+  - LCOV reports for integration with CI/CD and code analysis tools
+- **Coverage Thresholds**: Configured to maintain code quality standards
+  - Client: 45% minimum coverage across all metrics
+  - Server: 25% minimum coverage (lower due to infrastructure code not covered in unit tests)
+- **Test Files**: Use Jest with TypeScript support
+  - Client: React Testing Library for component tests
+  - Server: Jest with mocking for service and handler tests
+
+### Environment Variables
+Server configuration can be controlled via environment variables (see `server/.env.example`):
+- `PORT` - Server port (default: 4000)
+- `NODE_ENV` - Environment mode (development, production)
+- `LOG_LEVEL` - Logging level: error, warn, info, debug (default: info)
+- `ENABLE_FILE_LOGGING` - Enable file logging to logs/ directory (default: false)
 
 ## Architecture Overview
 
@@ -51,6 +68,12 @@ This is a TypeScript monorepo for an AI assistant with multiple client interface
 - WebSocket server with event-based message handling
 - Modular architecture with controllers, services, and loaders
 - **Reusable conversation engine** supporting multiple client types
+- **Structured Logging**: Winston-based logging system with:
+  - Colored console output (white for info, yellow for warnings, red for errors)
+  - Timestamp and structured columns for easy reading
+  - Optional file logging controlled by `ENABLE_FILE_LOGGING=true` environment variable
+  - Configurable log levels via `LOG_LEVEL` environment variable (info, debug, warn, error)
+  - JSON format for file logs, human-readable format for console
 
 ### Client Types
 
