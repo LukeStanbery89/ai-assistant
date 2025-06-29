@@ -33,6 +33,7 @@ export default tseslint.config(
                     patterns: ["../server/*"],
                 },
             ],
+            "quotes": ["error", "double", { "avoidEscape": true }],
         },
     },
 );
