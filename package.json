@@ -28,6 +28,8 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "test": "npm run test --workspaces",
+        "test:client": "npm run test --workspace=client",
+        "test:server": "npm run test --workspace=server",
         "format": "prettier --write .",
         "build": "npm run build --workspaces",
         "clean": "npm run clean --workspaces || true",

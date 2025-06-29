@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { CLIRepl } from "../CLIRepl";
 import WebSocket from "ws";
 import * as readline from "readline";

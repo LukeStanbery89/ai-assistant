@@ -4,6 +4,9 @@ const prettierPlugin = require("eslint-plugin-prettier");
 
 module.exports = [
     {
+        ignores: ["**/coverage/**", "**/dist/**", "**/node_modules/**"],
+    },
+    {
         files: ["server/**/*.{ts,tsx}"],
         languageOptions: {
             parser: tsParser,
