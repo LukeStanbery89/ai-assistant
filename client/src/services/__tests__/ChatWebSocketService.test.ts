@@ -51,7 +51,10 @@ class MockWebSocket {
 }
 
 // Mock global WebSocket
-(global as any).WebSocket = MockWebSocket;
+Object.defineProperty(window, 'WebSocket', {
+    writable: true,
+    value: MockWebSocket
+});
 
 describe('ChatWebSocketService', () => {
     let service: ChatWebSocketService;
@@ -136,14 +139,14 @@ describe('ChatWebSocketService', () => {
             service.sendMessage('Hello world');
 
             expect(sendSpy).toHaveBeenCalledWith(
-                JSON.stringify({
-                    type: 'conversation',
-                    payload: expect.objectContaining({
-                        message: 'Hello world',
-                        clientType: 'browser'
-                    })
-                })
+                expect.stringContaining('"type":"conversation"')
             );
+            
+            const callArg = sendSpy.mock.calls[0][0];
+            const parsedPayload = JSON.parse(callArg);
+            expect(parsedPayload.payload.message).toBe('Hello world');
+            expect(parsedPayload.payload.clientType).toBe('browser');
+            expect(parsedPayload.payload.userId).toBe('browser-user');
         });
 
         it('should throw error when sending message while disconnected', () => {
@@ -173,7 +176,16 @@ describe('ChatWebSocketService', () => {
 
             mockWs.simulateMessage(JSON.stringify(responseEvent));
 
-            expect(messageListener).toHaveBeenCalledWith(responseEvent.payload);
+            expect(messageListener).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: 'test-123',
+                    type: 'assistant',
+                    content: 'Hello back!',
+                    sessionId: 'session-123',
+                    userId: 'user-123',
+                    clientType: 'browser'
+                })
+            );
         });
 
         it('should handle error messages', () => {

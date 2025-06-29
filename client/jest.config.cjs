@@ -10,7 +10,8 @@ module.exports = {
                 allowSyntheticDefaultImports: true,
                 module: 'commonjs',
                 target: 'es2020',
-                jsx: 'react-jsx'
+                jsx: 'react-jsx',
+                types: ['jest', '@testing-library/jest-dom', 'node']
             }
         }]
     },
@@ -25,5 +26,6 @@ module.exports = {
     moduleNameMapper: {
         '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
     },
-    testTimeout: 5000
+    testTimeout: 5000,
+    verbose: true
 };

@@ -126,6 +126,7 @@ function ChatInput({
                         type="button"
                         style={{ height: '56px' }}
                         onMouseDown={(e) => e.preventDefault()} // Prevent focus loss when clicking button
+                        aria-label="Send"
                     >
                         {isSubmitting ? (
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

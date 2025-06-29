@@ -24,8 +24,12 @@ describe('MessageBubble', () => {
 
         expect(screen.getByText('Hello from user')).toBeInTheDocument();
         
-        const bubble = screen.getByText('Hello from user').closest('div');
-        expect(bubble).toHaveClass('bg-blue-500', 'text-white');
+        // Get the content div and go up to the bubble container
+        const contentDiv = screen.getByText('Hello from user');
+        const bubbleDiv = contentDiv.parentElement;
+        expect(bubbleDiv).toHaveClass('bg-gradient-to-br');
+        expect(bubbleDiv).toHaveClass('from-primary-500');
+        expect(bubbleDiv).toHaveClass('text-white');
     });
 
     it('should render assistant message with correct styling', () => {
@@ -38,8 +42,11 @@ describe('MessageBubble', () => {
 
         expect(screen.getByText('Hello from assistant')).toBeInTheDocument();
         
-        const bubble = screen.getByText('Hello from assistant').closest('div');
-        expect(bubble).toHaveClass('bg-gray-100', 'text-gray-900');
+        // Get the content div and go up to the bubble container
+        const contentDiv = screen.getByText('Hello from assistant');
+        const bubbleDiv = contentDiv.parentElement;
+        expect(bubbleDiv).toHaveClass('bg-white');
+        expect(bubbleDiv).toHaveClass('text-gray-900');
     });
 
     it('should render system message with special styling', () => {
@@ -53,7 +60,8 @@ describe('MessageBubble', () => {
         expect(screen.getByText('System notification')).toBeInTheDocument();
         
         const container = screen.getByText('System notification').closest('div');
-        expect(container).toHaveClass('bg-gray-100', 'text-gray-600');
+        expect(container).toHaveClass('bg-gray-100');
+        expect(container).toHaveClass('text-gray-600');
     });
 
     it('should display timestamp', () => {
@@ -63,7 +71,8 @@ describe('MessageBubble', () => {
 
         render(<MessageBubble message={message} />);
 
-        expect(screen.getByText('12:00 PM')).toBeInTheDocument();
+        // Time display depends on local timezone, just check some time is displayed
+        expect(screen.getByText(/\d{1,2}:\d{2}\s*(AM|PM)/)).toBeInTheDocument();
     });
 
     it('should show error indicator when message has error metadata', () => {

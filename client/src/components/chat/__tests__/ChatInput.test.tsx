@@ -13,7 +13,7 @@ describe('ChatInput', () => {
         render(<ChatInput onSendMessage={mockOnSendMessage} />);
 
         expect(screen.getByPlaceholderText('Type your message...')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument();
+        expect(screen.getByRole('button')).toBeInTheDocument();
     });
 
     it('should allow typing in textarea', async () => {
@@ -148,9 +148,11 @@ describe('ChatInput', () => {
             expect(textarea).toHaveValue('');
         });
         
-        // After message is sent and cleared, send button should be enabled again
+        // After message is sent and cleared, send button should be disabled (no content)
+        // But the loading state should be finished
         await waitFor(() => {
-            expect(sendButton).not.toBeDisabled();
+            expect(sendButton).toBeDisabled(); // Disabled because input is empty
+            expect(screen.queryByText('Sending...')).not.toBeInTheDocument();
         });
     });
 

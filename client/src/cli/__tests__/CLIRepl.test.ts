@@ -187,15 +187,14 @@ describe('CLIRepl', () => {
         });
 
         it('should not send message when not connected', () => {
-            Object.defineProperty(mockWs, 'readyState', {
-                value: WebSocket.CLOSED,
-                writable: true
-            });
+            // Reset the connection state
+            (cliRepl as any).isConnected = false;
+            (cliRepl as any).ws = null;
 
             lineHandler('test message');
 
             expect(mockWs.send).not.toHaveBeenCalled();
-            expect(mockConsoleLog).toHaveBeenCalledWith('❌ Not connected to server');
+            expect(mockConsoleLog).toHaveBeenCalledWith('❌ Not connected to server. Please wait for connection...');
         });
 
         it('should prevent multiple concurrent messages', () => {
