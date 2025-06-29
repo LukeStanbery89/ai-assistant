@@ -57,6 +57,9 @@ Server configuration can be controlled via environment variables (see `server/.e
 - `NODE_ENV` - Environment mode (development, production)
 - `LOG_LEVEL` - Logging level: error, warn, info, debug (default: info)
 - `ENABLE_FILE_LOGGING` - Enable file logging to logs/ directory (default: false)
+- `WIT_AI_ACCESS_TOKEN` - Wit.AI access token for intent parsing (optional)
+- `INTENT_PARSER_TIMEOUT` - Timeout for intent parsing API calls in ms (default: 3000)
+- `INTENT_CONFIDENCE_THRESHOLD` - Minimum confidence for intent classification (default: 0.7)
 
 ## Architecture Overview
 
@@ -74,6 +77,20 @@ This is a TypeScript monorepo for an AI assistant with multiple client interface
   - Optional file logging controlled by `ENABLE_FILE_LOGGING=true` environment variable
   - Configurable log levels via `LOG_LEVEL` environment variable (info, debug, warn, error)
   - JSON format for file logs, human-readable format for console
+- **Intent Parser System**: Configuration-driven, pluggable intent analysis with:
+  - Dynamic intent loading from `server/config/intent_parser_config.json`
+  - Wit.AI integration for natural language understanding
+  - Support for 9 intent types: weather, IoT control, time, web search, timers, alarms, media, news, and chat
+  - Entity extraction (locations, devices, temperatures, durations, media titles, etc.)
+  - Confidence-based fallback to chat mode
+  - Easy swapping between providers via dependency injection
+  - Comprehensive error handling and graceful degradation
+  - Runtime configuration updates without code changes
+- **LLM Response Generation**: Placeholder service with:
+  - Context-aware responses for all 9 intent types
+  - Human-like conversational patterns with personalized responses
+  - Dynamic response generation based on extracted entities
+  - Extensible for future real LLM integration (OpenAI, Anthropic, local models)
 
 ### Client Types
 
@@ -160,3 +177,11 @@ Client → ConversationCommand → Intent Analysis → Task Processor → Conver
 ```
 
 This design enables easy addition of new client types without modifying the core conversation logic.
+
+## Git Commit Guidelines
+
+Before committing any changes to git, ensure the following tasks are completed:
+
+- Make any necessary updates to the `README.md`, `server/README.md`, `client/README.md`, and all files in the `docs/` directory before committing a change to git.
+- Make any necessary updates to the files in the `docs/` directory before committing a change to git.
+- Stage all unstaged changes before committing a file to git.

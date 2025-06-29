@@ -26,7 +26,7 @@ describe("ChatModule", () => {
 
         it("should return false for non-CHAT intent", () => {
             const inputs: ParsedInputs = {
-                intent: MessageIntent.WEATHER,
+                intent: MessageIntent.GET_WEATHER,
                 parameters: {},
             };
 

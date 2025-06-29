@@ -45,6 +45,8 @@ export interface ConversationMessage {
         processingTime?: number;
         error?: boolean;
         intent?: MessageIntent;
+        confidence?: number;
+        entities?: ParsedEntity[];
     };
 }
 
@@ -81,10 +83,106 @@ export interface TaskResult {
 }
 
 export enum MessageIntent {
-    WEATHER = 'weather',
+    GET_WEATHER = 'get_weather',
     IOT_CONTROL = 'iot_control',
+    GET_TIME = 'get_time',
     WEB_SEARCH = 'web_search',
-    REMINDER = 'reminder',
-    CHAT = 'chat',
-    HELP = 'help'
+    SET_TIMER = 'set_timer',
+    SET_ALARM = 'set_alarm',
+    PLAY_MEDIA = 'play_media',
+    GET_NEWS = 'get_news',
+    CHAT = 'chat'
+}
+
+// Intent Parser interfaces
+export interface IntentParseResult {
+    intent: MessageIntent;
+    parameters: Record<string, any>;
+    confidence: number;
+    entities: ParsedEntity[];
+    sentiment?: string;
+    rawResponse?: any; // Store original response for debugging
+}
+
+export interface ParsedEntity {
+    name: string;
+    value: any;
+    confidence: number;
+    type: 'text' | 'number' | 'date' | 'location' | 'device' | 'temperature';
+    unit?: string; // For temperature, distance, etc.
+    coordinates?: { lat: number; long: number }; // For locations
+    resolvedValues?: any[]; // For complex entities like locations
+}
+
+// Wit.AI specific response types
+export interface WitAIResponse {
+    entities: Record<string, WitAIEntity[]>;
+    intents: WitAIIntent[];
+    text: string;
+    traits: Record<string, WitAITrait[]>;
+}
+
+export interface WitAIEntity {
+    body: string;
+    confidence: number;
+    end: number;
+    start: number;
+    entities: Record<string, any>;
+    id: string;
+    name: string;
+    role: string;
+    type: 'value' | 'resolved';
+    value: any;
+    unit?: string;
+    resolved?: {
+        values: Array<{
+            name: string;
+            coords?: { lat: number; long: number };
+            timezone?: string;
+            domain?: string;
+            external?: Record<string, string>;
+            attributes?: Record<string, any>;
+        }>;
+    };
+}
+
+export interface WitAIIntent {
+    confidence: number;
+    id: string;
+    name: string;
+}
+
+export interface WitAITrait {
+    confidence: number;
+    id: string;
+    value: string;
+}
+
+// Configuration interfaces
+export interface IntentConfig {
+    description: string;
+    entities: string[];
+    examples: string[];
+}
+
+export interface EntityConfig {
+    roles: string[];
+    examples: string[];
+}
+
+export interface TraitConfig {
+    usage: string;
+}
+
+export interface IntentParserConfig {
+    intents: Record<string, IntentConfig>;
+    entities: Record<string, EntityConfig>;
+    traits: Record<string, TraitConfig>;
+}
+
+// LLM Integration interfaces (placeholder)
+export interface LLMPromptTemplate {
+    intent: MessageIntent;
+    systemPrompt: string;
+    userPromptTemplate: string;
 }

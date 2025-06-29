@@ -1,14 +1,30 @@
-import { injectable } from "tsyringe";
-import { ConversationMessage, ConversationCommand, MessageIntent } from "../../../../shared/types";
+import { injectable, inject } from "tsyringe";
+import { ConversationMessage, ConversationCommand } from "../../../../shared/types";
 import { IConversationService } from "../IConversationService";
+import { IIntentParser } from "../IIntentParser";
+import { ILLMService } from "../ILLMService";
+import { logger } from "../../utils";
 
 @injectable()
 export class ConversationService implements IConversationService {
     private conversations: Map<string, ConversationMessage[]> = new Map();
 
+    constructor(
+        @inject("IIntentParser") private intentParser: IIntentParser,
+        @inject("ILLMService") private llmService: ILLMService,
+    ) { }
+
     async processMessage(command: ConversationCommand): Promise<ConversationMessage> {
+        // TODO: Consider tying this message ID to a DB record primary key or something in the future?
         const messageId = this.generateId();
         const timestamp = new Date();
+
+        logger.info("Processing conversation message", {
+            sessionId: command.sessionId,
+            userId: command.userId,
+            clientType: command.clientType,
+            messageLength: command.message.length,
+        });
 
         // Store user message
         const userMessage: ConversationMessage = {
@@ -23,25 +39,78 @@ export class ConversationService implements IConversationService {
 
         this.addMessageToHistory(command.sessionId, userMessage);
 
-        // Generate simple response for now
-        const response = this.generateSimpleResponse(command.message);
+        try {
+            // Parse intent from user message
+            const parseResult = await this.intentParser.parseIntent(
+                command.message,
+                command.context,
+            );
 
-        const assistantMessage: ConversationMessage = {
-            id: messageId,
-            type: "assistant",
-            content: response,
-            timestamp: new Date(),
-            sessionId: command.sessionId,
-            userId: command.userId,
-            clientType: command.clientType,
-            metadata: {
-                intent: MessageIntent.CHAT,
-            },
-        };
+            logger.debug("Intent parsed", {
+                intent: parseResult.intent,
+                confidence: parseResult.confidence,
+                entityCount: parseResult.entities.length,
+            });
 
-        this.addMessageToHistory(command.sessionId, assistantMessage);
+            // Generate LLM response based on intent and parameters
+            const responseContent = await this.llmService.generateResponse(
+                parseResult.intent,
+                parseResult.parameters,
+                command.message,
+                command.context,
+            );
 
-        return assistantMessage;
+            const assistantMessage: ConversationMessage = {
+                id: messageId,
+                type: "assistant",
+                content: responseContent,
+                timestamp: new Date(),
+                sessionId: command.sessionId,
+                userId: command.userId,
+                clientType: command.clientType,
+                metadata: {
+                    intent: parseResult.intent,
+                    confidence: parseResult.confidence,
+                    entities: parseResult.entities,
+                    processingTime: Date.now() - timestamp.getTime(),
+                },
+            };
+
+            this.addMessageToHistory(command.sessionId, assistantMessage);
+
+            logger.info("Message processed successfully", {
+                intent: parseResult.intent,
+                confidence: parseResult.confidence,
+                processingTime: assistantMessage.metadata?.processingTime,
+            });
+
+            return assistantMessage;
+        } catch (error) {
+            logger.error("Failed to process conversation message", {
+                error: error instanceof Error ? error.message : "Unknown error",
+                stack: error instanceof Error ? error.stack : undefined,
+                payload: command,
+            });
+
+            // Fallback response for errors
+            const fallbackMessage: ConversationMessage = {
+                id: messageId,
+                type: "assistant",
+                content:
+                    "I apologize, but I'm having trouble processing your message right now. Could you please try again?",
+                timestamp: new Date(),
+                sessionId: command.sessionId,
+                userId: command.userId,
+                clientType: command.clientType,
+                metadata: {
+                    error: true,
+                    processingTime: Date.now() - timestamp.getTime(),
+                },
+            };
+
+            this.addMessageToHistory(command.sessionId, fallbackMessage);
+            return fallbackMessage;
+        }
     }
 
     async getConversationHistory(
@@ -56,24 +125,6 @@ export class ConversationService implements IConversationService {
             this.conversations.set(sessionId, []);
         }
         this.conversations.get(sessionId)!.push(message);
-    }
-
-    private generateSimpleResponse(userMessage: string): string {
-        const lowerMessage = userMessage.toLowerCase();
-
-        if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-            return "Hello! How can I help you today?";
-        }
-
-        if (lowerMessage.includes("weather")) {
-            return "I can help with weather information, but I need to be connected to a weather service first.";
-        }
-
-        if (lowerMessage.includes("help")) {
-            return "I'm an AI assistant that can help with various tasks. Try asking me about the weather, or just have a conversation!";
-        }
-
-        return `You said: "${userMessage}". I'm a simple AI assistant and I'm still learning. How can I help you?`;
     }
 
     private generateId(): string {
