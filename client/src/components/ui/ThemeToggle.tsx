@@ -1,4 +1,4 @@
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from "../../contexts/ThemeContext";
 
 function ThemeToggle() {
     const { isDark, toggleTheme } = useTheme();
@@ -7,7 +7,7 @@ function ThemeToggle() {
         <button
             onClick={toggleTheme}
             className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-dark-800 dark:hover:bg-dark-700 transition-colors duration-200 group"
-            aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+            aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
         >
             <div className="w-5 h-5 relative">
                 {isDark ? (

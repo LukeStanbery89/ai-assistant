@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import type {
     ConversationCommand,
     ConversationMessage,
@@ -6,7 +6,7 @@ import type {
     ConversationResponseEvent,
     WebSocketEventTypes,
     ErrorEvent
-} from '../../../shared/types';
+} from "../../../shared/types";
 
 export interface ChatWebSocketServiceConfig {
     url: string;
@@ -38,7 +38,7 @@ export class ChatWebSocketService {
             ...config
         };
         this.sessionId = uuidv4();
-        this.userId = 'browser-user'; // TODO: Implement proper user identification
+        this.userId = "browser-user"; // TODO: Implement proper user identification
     }
 
     connect(): void {
@@ -52,7 +52,7 @@ export class ChatWebSocketService {
             this.ws = new WebSocket(this.config.url);
 
             this.ws.onopen = () => {
-                console.log('WebSocket connected');
+                console.log("WebSocket connected");
                 this.reconnectAttempts = 0;
                 this.notifyConnectionListeners({ connected: true, connecting: false });
             };
@@ -62,13 +62,13 @@ export class ChatWebSocketService {
                     const wsEvent: WebSocketEventTypes = JSON.parse(event.data);
                     this.handleMessage(wsEvent);
                 } catch (error) {
-                    console.error('Failed to parse WebSocket message:', error);
-                    this.notifyErrorListeners('Failed to parse server message');
+                    console.error("Failed to parse WebSocket message:", error);
+                    this.notifyErrorListeners("Failed to parse server message");
                 }
             };
 
             this.ws.onclose = (event) => {
-                console.log('WebSocket disconnected:', event.reason);
+                console.log("WebSocket disconnected:", event.reason);
                 this.notifyConnectionListeners({ connected: false, connecting: false });
                 
                 if (!event.wasClean && this.shouldReconnect()) {
@@ -77,21 +77,21 @@ export class ChatWebSocketService {
             };
 
             this.ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                console.error("WebSocket error:", error);
                 this.notifyConnectionListeners({ 
                     connected: false, 
                     connecting: false, 
-                    error: 'Connection error' 
+                    error: "Connection error" 
                 });
-                this.notifyErrorListeners('Connection error occurred');
+                this.notifyErrorListeners("Connection error occurred");
             };
 
         } catch (error) {
-            console.error('Failed to create WebSocket connection:', error);
+            console.error("Failed to create WebSocket connection:", error);
             this.notifyConnectionListeners({ 
                 connected: false, 
                 connecting: false, 
-                error: 'Failed to connect' 
+                error: "Failed to connect" 
             });
         }
     }
@@ -112,18 +112,18 @@ export class ChatWebSocketService {
 
     sendMessage(message: string): void {
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-            throw new Error('WebSocket not connected');
+            throw new Error("WebSocket not connected");
         }
 
         const command: ConversationCommand = {
             sessionId: this.sessionId,
             message,
-            clientType: 'browser',
+            clientType: "browser",
             userId: this.userId
         };
 
         const event: ConversationEvent = {
-            type: 'conversation',
+            type: "conversation",
             payload: command
         };
 
@@ -164,22 +164,24 @@ export class ChatWebSocketService {
 
     private handleMessage(event: WebSocketEventTypes): void {
         switch (event.type) {
-            case 'conversation_response':
+            case "conversation_response": {
                 const responseEvent = event as ConversationResponseEvent;
                 this.notifyMessageListeners(responseEvent.payload);
                 break;
+            }
             
-            case 'error':
+            case "error": {
                 const errorEvent = event as ErrorEvent;
                 this.notifyErrorListeners(errorEvent.payload.message);
                 break;
+            }
             
-            case 'pong':
+            case "pong":
                 // Handle pong if needed for heartbeat
                 break;
             
             default:
-                console.log('Received unhandled WebSocket event:', event);
+                console.log("Received unhandled WebSocket event:", event);
         }
     }
 
@@ -208,7 +210,7 @@ export class ChatWebSocketService {
             try {
                 listener(message);
             } catch (error) {
-                console.error('Error in message listener:', error);
+                console.error("Error in message listener:", error);
             }
         });
     }
@@ -218,7 +220,7 @@ export class ChatWebSocketService {
             try {
                 listener(error);
             } catch (err) {
-                console.error('Error in error listener:', err);
+                console.error("Error in error listener:", err);
             }
         });
     }
@@ -228,7 +230,7 @@ export class ChatWebSocketService {
             try {
                 listener(status);
             } catch (error) {
-                console.error('Error in connection listener:', error);
+                console.error("Error in connection listener:", error);
             }
         });
     }

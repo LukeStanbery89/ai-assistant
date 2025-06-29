@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChatWebSocketService, type ConnectionStatus } from '../services/ChatWebSocketService';
-import type { ConversationMessage } from '../../../shared/types';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { ChatWebSocketService, type ConnectionStatus } from "../services/ChatWebSocketService";
+import type { ConversationMessage } from "../../../shared/types";
 
 export interface UseChatWebSocketReturn {
     messages: ConversationMessage[];
@@ -12,7 +12,7 @@ export interface UseChatWebSocketReturn {
     error: string | null;
 }
 
-export function useChatWebSocket(url: string = 'ws://localhost:3000'): UseChatWebSocketReturn {
+export function useChatWebSocket(url: string = "ws://localhost:3000"): UseChatWebSocketReturn {
     const [messages, setMessages] = useState<ConversationMessage[]>([]);
     const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>({
         connected: false,
@@ -52,7 +52,7 @@ export function useChatWebSocket(url: string = 'ws://localhost:3000'): UseChatWe
             unsubscribeMessage();
             unsubscribeError();
             unsubscribeConnection();
-            
+
             if (serviceRef.current) {
                 serviceRef.current.disconnect();
                 serviceRef.current = null;
@@ -62,32 +62,32 @@ export function useChatWebSocket(url: string = 'ws://localhost:3000'): UseChatWe
 
     const sendMessage = useCallback(async (message: string): Promise<void> => {
         if (!serviceRef.current) {
-            throw new Error('WebSocket service not available');
+            throw new Error("WebSocket service not available");
         }
 
         if (!connectionStatus.connected) {
-            throw new Error('Not connected to server');
+            throw new Error("Not connected to server");
         }
 
         try {
             // Add user message to local state immediately
             const userMessage: ConversationMessage = {
                 id: `user-${Date.now()}`,
-                type: 'user',
+                type: "user",
                 content: message,
                 timestamp: new Date(),
-                sessionId: 'browser-session', // TODO: Get from service
-                userId: 'browser-user',
-                clientType: 'browser'
+                sessionId: "browser-session", // TODO: Get from service
+                userId: "browser-user",
+                clientType: "browser"
             };
 
             setMessages(prev => [...prev, userMessage]);
-            
+
             // Send to server
             serviceRef.current.sendMessage(message);
             setError(null);
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
+            const errorMessage = err instanceof Error ? err.message : "Failed to send message";
             setError(errorMessage);
             throw new Error(errorMessage);
         }

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import MessageBubble from './MessageBubble';
-import type { ConversationMessage } from '../../../../shared/types';
+import { useEffect, useRef } from "react";
+import MessageBubble from "./MessageBubble";
+import type { ConversationMessage } from "../../../../shared/types";
 
 interface MessageHistoryProps {
     messages: ConversationMessage[];
@@ -11,7 +11,7 @@ function MessageHistory({ messages, isLoading = false }: MessageHistoryProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
@@ -40,21 +40,21 @@ function MessageHistory({ messages, isLoading = false }: MessageHistoryProps) {
                 {messages.map((message) => (
                     <MessageBubble key={message.id} message={message} />
                 ))}
-                
+
                 {isLoading && (
                     <div className="flex justify-start mb-6 animate-fade-in">
                         <div className="max-w-xs">
                             <div className="bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-700 text-gray-900 dark:text-gray-100 px-5 py-3 rounded-3xl rounded-bl-lg shadow-sm">
                                 <div className="flex items-center space-x-1">
                                     <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                                    <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
-                
+
                 <div ref={messagesEndRef} />
             </div>
         </div>

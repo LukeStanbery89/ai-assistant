@@ -1,16 +1,16 @@
-import { useChatWebSocket } from '../hooks/useChatWebSocket';
-import MessageHistory from '../components/chat/MessageHistory';
-import ChatInput from '../components/chat/ChatInput';
-import ConnectionStatus from '../components/chat/ConnectionStatus';
+import { useChatWebSocket } from "../hooks/useChatWebSocket";
+import MessageHistory from "../components/chat/MessageHistory";
+import ChatInput from "../components/chat/ChatInput";
+import ConnectionStatus from "../components/chat/ConnectionStatus";
 
 function Chat() {
-    const { 
-        messages, 
-        connectionStatus, 
-        sendMessage, 
-        clearMessages, 
+    const {
+        messages,
+        connectionStatus,
+        sendMessage,
+        clearMessages,
         isConnected,
-        error 
+        error
     } = useChatWebSocket();
 
     return (
@@ -20,18 +20,22 @@ function Chat() {
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Assistant</h1>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Your intelligent conversation partner</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">Your intelligent conversation partner</p>
                     </div>
-                    
+
                     <div className="flex items-center space-x-4">
                         <ConnectionStatus status={connectionStatus} />
-                        
+
                         {messages.length > 0 && (
-                            <button 
+                            <button
                                 onClick={clearMessages}
-                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-4 py-2 rounded-xl border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all duration-200"
+                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-4 py-2 rounded-xl border border-gray-300 dark:border-dark-600 hover:bg-gray-50 dark:hover:bg-dark-800 transition-all duration-200 flex items-center space-x-2"
+                                aria-label="Clear Chat"
                             >
-                                Clear Chat
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                <span className="hidden sm:inline">Clear Chat</span>
                             </button>
                         )}
                     </div>
@@ -58,15 +62,15 @@ function Chat() {
 
             {/* Messages */}
             <div className="flex-1 bg-gray-50 dark:bg-dark-950 min-h-0">
-                <MessageHistory 
-                    messages={messages} 
+                <MessageHistory
+                    messages={messages}
                     isLoading={false} // TODO: Add loading state when waiting for response
                 />
             </div>
 
             {/* Input */}
             <div className="flex-shrink-0">
-                <ChatInput 
+                <ChatInput
                     onSendMessage={sendMessage}
                     disabled={!isConnected}
                     placeholder={isConnected ? "Type your message..." : "Connecting..."}

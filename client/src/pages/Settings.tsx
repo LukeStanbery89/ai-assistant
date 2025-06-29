@@ -1,4 +1,4 @@
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from "../contexts/ThemeContext";
 
 function Settings() {
     const { isDark, setTheme } = useTheme();
@@ -18,21 +18,21 @@ function Settings() {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Theme</label>
                                 <div className="flex space-x-3">
                                     <button
-                                        onClick={() => setTheme('light')}
+                                        onClick={() => setTheme("light")}
                                         className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                                             !isDark
-                                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-300 dark:border-primary-600'
-                                                : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-dark-600'
+                                                ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-300 dark:border-primary-600"
+                                                : "bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-dark-600"
                                         }`}
                                     >
                                         ☀️ Light
                                     </button>
                                     <button
-                                        onClick={() => setTheme('dark')}
+                                        onClick={() => setTheme("dark")}
                                         className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                                             isDark
-                                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-300 dark:border-primary-600'
-                                                : 'bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-dark-600'
+                                                ? "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 border-2 border-primary-300 dark:border-primary-600"
+                                                : "bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-400 border-2 border-transparent hover:bg-gray-200 dark:hover:bg-dark-600"
                                         }`}
                                     >
                                         🌙 Dark

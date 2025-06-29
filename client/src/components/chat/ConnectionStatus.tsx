@@ -1,4 +1,4 @@
-import type { ConnectionStatus as ConnectionStatusType } from '../../services/ChatWebSocketService';
+import type { ConnectionStatus as ConnectionStatusType } from "../../services/ChatWebSocketService";
 
 interface ConnectionStatusProps {
     status: ConnectionStatusType;
@@ -27,7 +27,7 @@ function ConnectionStatus({ status }: ConnectionStatusProps) {
         <div className="flex items-center space-x-2 text-red-600 dark:text-red-400 text-sm font-medium">
             <div className="w-2 h-2 bg-red-500 dark:bg-red-400 rounded-full shadow-sm"></div>
             <span>
-                {status.error ? `Error: ${status.error}` : 'Disconnected'}
+                {status.error ? `Error: ${status.error}` : "Disconnected"}
             </span>
         </div>
     );

@@ -1,13 +1,13 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Layout from './components/ui/Layout';
-import Navigation from './components/ui/Navigation';
-import Chat from './pages/Chat';
-import Settings from './pages/Settings';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./components/ui/Layout";
+import Navigation from "./components/ui/Navigation";
+import Chat from "./pages/Chat";
+import Settings from "./pages/Settings";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const routes = [
-    { path: '/chat', label: 'Chat' },
-    { path: '/settings', label: 'Settings' },
+    { path: "/chat", label: "Chat" },
+    { path: "/settings", label: "Settings" },
 ];
 
 function App() {

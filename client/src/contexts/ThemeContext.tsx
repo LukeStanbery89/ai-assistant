@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 interface ThemeContextType {
     isDark: boolean;
     toggleTheme: () => void;
-    setTheme: (theme: 'light' | 'dark') => void;
+    setTheme: (theme: "light" | "dark") => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -17,24 +17,24 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
     useEffect(() => {
         // Check localStorage for saved theme preference
-        const savedTheme = localStorage.getItem('theme');
+        const savedTheme = localStorage.getItem("theme");
         if (savedTheme) {
-            const prefersDark = 'dark' === savedTheme;
+            const prefersDark = "dark" === savedTheme;
             setIsDark(prefersDark);
             updateDocumentClass(prefersDark);
         } else {
             // Default to dark mode and save preference
             setIsDark(true);
             updateDocumentClass(true);
-            localStorage.setItem('theme', 'dark');
+            localStorage.setItem("theme", "dark");
         }
     }, []);
 
     const updateDocumentClass = (dark: boolean) => {
         if (dark) {
-            document.documentElement.classList.add('dark');
+            document.documentElement.classList.add("dark");
         } else {
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.remove("dark");
         }
     };
 
@@ -42,14 +42,14 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         const newTheme = !isDark;
         setIsDark(newTheme);
         updateDocumentClass(newTheme);
-        localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+        localStorage.setItem("theme", newTheme ? "dark" : "light");
     };
 
-    const setTheme = (theme: 'light' | 'dark') => {
-        const dark = 'dark' === theme;
+    const setTheme = (theme: "light" | "dark") => {
+        const dark = "dark" === theme;
         setIsDark(dark);
         updateDocumentClass(dark);
-        localStorage.setItem('theme', theme);
+        localStorage.setItem("theme", theme);
     };
 
     return (
@@ -62,7 +62,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 export function useTheme() {
     const context = useContext(ThemeContext);
     if (context === undefined) {
-        throw new Error('useTheme must be used within a ThemeProvider');
+        throw new Error("useTheme must be used within a ThemeProvider");
     }
     return context;
 }
