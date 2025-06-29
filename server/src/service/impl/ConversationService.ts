@@ -15,6 +15,7 @@ export class ConversationService implements IConversationService {
     ) { }
 
     async processMessage(command: ConversationCommand): Promise<ConversationMessage> {
+        // TODO: Consider tying this message ID to a DB record primary key or something in the future?
         const messageId = this.generateId();
         const timestamp = new Date();
 

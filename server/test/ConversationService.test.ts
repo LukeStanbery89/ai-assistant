@@ -63,7 +63,7 @@ describe("ConversationService", () => {
         it("should respond with weather message for weather queries", async () => {
             // Set up weather intent response
             mockIntentParser.parseIntent.mockResolvedValue({
-                intent: MessageIntent.WEATHER,
+                intent: MessageIntent.GET_WEATHER,
                 parameters: { location: "Chicago" },
                 confidence: 0.95,
                 entities: [
@@ -89,19 +89,19 @@ describe("ConversationService", () => {
                 command.context,
             );
             expect(mockLLMService.generateResponse).toHaveBeenCalledWith(
-                MessageIntent.WEATHER,
+                MessageIntent.GET_WEATHER,
                 { location: "Chicago" },
                 command.message,
                 command.context,
             );
-            expect(response.metadata?.intent).toBe(MessageIntent.WEATHER);
+            expect(response.metadata?.intent).toBe(MessageIntent.GET_WEATHER);
             expect(response.metadata?.confidence).toBe(0.95);
         });
 
         it("should respond with help message for help queries", async () => {
             // Set up help intent response
             mockIntentParser.parseIntent.mockResolvedValue({
-                intent: MessageIntent.HELP,
+                intent: MessageIntent.CHAT,
                 parameters: {},
                 confidence: 0.9,
                 entities: [],
@@ -125,12 +125,12 @@ describe("ConversationService", () => {
                 command.context,
             );
             expect(mockLLMService.generateResponse).toHaveBeenCalledWith(
-                MessageIntent.HELP,
+                MessageIntent.CHAT,
                 {},
                 command.message,
                 command.context,
             );
-            expect(response.metadata?.intent).toBe(MessageIntent.HELP);
+            expect(response.metadata?.intent).toBe(MessageIntent.CHAT);
         });
 
         it("should provide default response for unknown messages", async () => {

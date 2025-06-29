@@ -6,6 +6,8 @@ import { IIntentParser } from "../service/IIntentParser";
 import { WitAIIntentParser } from "../service/impl/WitAIIntentParser";
 import { ILLMService } from "../service/ILLMService";
 import { PlaceholderLLMService } from "../service/impl/PlaceholderLLMService";
+import { IConfigurationLoader } from "../service/IConfigurationLoader";
+import { FileConfigurationLoader } from "../service/impl/FileConfigurationLoader";
 import { logger } from "../utils";
 
 export function initDI() {
@@ -13,6 +15,11 @@ export function initDI() {
 
     // Legacy singleton service
     container.registerSingleton(SingletonService);
+
+    // Configuration Loader - loads intent parser configuration from file
+    container.register<IConfigurationLoader>("IConfigurationLoader", {
+        useClass: FileConfigurationLoader,
+    });
 
     // Intent Parser - easily swappable for future local models
     container.register<IIntentParser>("IIntentParser", {
@@ -30,6 +37,6 @@ export function initDI() {
     });
 
     logger.debug("Dependency injection container initialized", {
-        services: ["IIntentParser", "ILLMService", "IConversationService"],
+        services: ["IConfigurationLoader", "IIntentParser", "ILLMService", "IConversationService"],
     });
 }

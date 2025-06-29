@@ -1,0 +1,272 @@
+{
+    "intents": {
+        "get_weather": {
+            "description": "Get the weather forecast or current conditions.",
+            "entities": [
+                "wit/location",
+                "wit/datetime"
+            ],
+            "examples": [
+                "What's the weather like?",
+                "Tell me the forecast for tomorrow.",
+                "Will it rain in New York today?",
+                "Weather in Los Angeles next week.",
+                "What's the temperature outside?"
+            ]
+        },
+        "iot_control": {
+            "description": "Control a smart home device (turn on/off, set value, etc.).",
+            "entities": [
+                "custom/device",
+                "custom/action",
+                "custom/value",
+                "custom/unit",
+                "wit/location"
+            ],
+            "examples": [
+                "Turn off the living room lights.",
+                "Set the thermostat to 70 degrees.",
+                "Dim the bedroom light to 50 percent.",
+                "Increase the volume on the kitchen speaker.",
+                "Turn on the fan in the office."
+            ]
+        },
+        "get_time": {
+            "description": "Get the current time or date.",
+            "entities": [
+                "wit/location"
+            ],
+            "examples": [
+                "What time is it?",
+                "What's the date today?",
+                "Current time in London.",
+                "What day is it?"
+            ]
+        },
+        "web_search": {
+            "description": "Perform a web search.",
+            "entities": [
+                "custom/query"
+            ],
+            "examples": [
+                "Who is the president of France?",
+                "How tall is Mount Everest?",
+                "Search for best coffee shops nearby.",
+                "Find me a recipe for chocolate cake.",
+                "What's the capital of Argentina?"
+            ]
+        },
+        "set_timer": {
+            "description": "Start a countdown timer.",
+            "entities": [
+                "wit/duration"
+            ],
+            "examples": [
+                "Set a timer for 10 minutes.",
+                "Start a 30 second countdown.",
+                "Begin a timer for 2 hours.",
+                "Timer for five minutes please."
+            ]
+        },
+        "set_alarm": {
+            "description": "Set an alarm for a specific time.",
+            "entities": [
+                "wit/datetime",
+                "custom/label"
+            ],
+            "examples": [
+                "Set an alarm for 6 AM.",
+                "Wake me up at 7.",
+                "Alarm for tomorrow morning called workout.",
+                "Create a meeting alarm at 3 PM."
+            ]
+        },
+        "play_media": {
+            "description": "Play music, videos, podcasts, etc.",
+            "entities": [
+                "custom/media_type",
+                "custom/media_title",
+                "custom/media_action",
+                "custom/service",
+                "custom/topic"
+            ],
+            "examples": [
+                "Play Bohemian Rhapsody on Spotify.",
+                "Watch Stranger Things on Netflix.",
+                "Play a podcast about tech.",
+                "Turn on the radio.",
+                "Start some music.",
+                "Pause this song.",
+                "Skip this track.",
+                "Play the next episode.",
+                "Start this song over."
+            ]
+        },
+        "get_news": {
+            "description": "Get current news by category or location.",
+            "entities": [
+                "custom/topic",
+                "wit/location"
+            ],
+            "examples": [
+                "What's the latest news?",
+                "Give me technology headlines.",
+                "Show me sports news.",
+                "What's happening in California today?",
+                "Entertainment news please."
+            ]
+        },
+        "chat": {
+            "description": "General conversation with the assistant (fallback intent).",
+            "entities": [],
+            "examples": [
+                "What do you think about space travel?",
+                "Tell me something interesting.",
+                "Do you like pizza?",
+                "What's your favorite movie?",
+                "Can you talk to me?",
+                "I'm bored.",
+                "What's your name?",
+                "Do you dream?",
+                "Tell me about yourself.",
+                "Just chatting with you."
+            ]
+        }
+    },
+    "entities": {
+        "custom/device": {
+            "roles": [
+                "device"
+            ],
+            "examples": [
+                "lights",
+                "tv",
+                "thermostat",
+                "fan",
+                "speaker",
+                "garage door"
+            ]
+        },
+        "custom/action": {
+            "roles": [
+                "action"
+            ],
+            "examples": [
+                "turn on",
+                "turn off",
+                "increase",
+                "decrease",
+                "set",
+                "dim"
+            ]
+        },
+        "custom/value": {
+            "roles": [
+                "value"
+            ],
+            "examples": [
+                "72",
+                "50",
+                "maximum",
+                "low",
+                "100",
+                "30"
+            ]
+        },
+        "custom/unit": {
+            "roles": [
+                "unit"
+            ],
+            "examples": [
+                "degrees",
+                "percent",
+                "minutes",
+                "seconds",
+                "hours"
+            ]
+        },
+        "custom/query": {
+            "roles": [
+                "query"
+            ],
+            "examples": [
+                "how tall is Mount Everest",
+                "who is the president of France",
+                "find me a recipe for chocolate cake"
+            ]
+        },
+        "custom/label": {
+            "roles": [
+                "label"
+            ],
+            "examples": [
+                "meeting",
+                "workout",
+                "wake up",
+                "morning alarm"
+            ]
+        },
+        "custom/media_type": {
+            "roles": [
+                "media_type"
+            ],
+            "examples": [
+                "music",
+                "video",
+                "podcast",
+                "radio"
+            ]
+        },
+        "custom/media_title": {
+            "roles": [
+                "media_title"
+            ],
+            "examples": [
+                "Bohemian Rhapsody",
+                "NewsHour",
+                "Stranger Things"
+            ]
+        },
+        "custom/media_action": {
+            "roles": [
+                "media_action"
+            ],
+            "examples": [
+                "play",
+                "pause",
+                "stop",
+                "skip",
+                "replay",
+                "rewind",
+                "fast_forward"
+            ]
+        },
+        "custom/service": {
+            "roles": [
+                "service"
+            ],
+            "examples": [
+                "Spotify",
+                "YouTube",
+                "Netflix"
+            ]
+        },
+        "custom/topic": {
+            "roles": [
+                "category"
+            ],
+            "examples": [
+                "general",
+                "sports",
+                "technology",
+                "politics",
+                "entertainment"
+            ]
+        }
+    },
+    "traits": {
+        "wit/sentiment": {
+            "usage": "Optional — analyze tone of user's utterance."
+        }
+    }
+}

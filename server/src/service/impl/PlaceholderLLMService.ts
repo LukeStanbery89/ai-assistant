@@ -18,20 +18,29 @@ export class PlaceholderLLMService implements ILLMService {
         });
 
         switch (intent) {
-            case MessageIntent.WEATHER:
+            case MessageIntent.GET_WEATHER:
                 return this.generateWeatherResponse(parameters);
 
             case MessageIntent.IOT_CONTROL:
                 return this.generateIoTResponse(parameters);
 
+            case MessageIntent.GET_TIME:
+                return this.generateTimeResponse(parameters);
+
             case MessageIntent.WEB_SEARCH:
                 return this.generateWebSearchResponse(parameters);
 
-            case MessageIntent.REMINDER:
-                return this.generateReminderResponse(parameters);
+            case MessageIntent.SET_TIMER:
+                return this.generateTimerResponse(parameters);
 
-            case MessageIntent.HELP:
-                return this.generateHelpResponse();
+            case MessageIntent.SET_ALARM:
+                return this.generateAlarmResponse(parameters);
+
+            case MessageIntent.PLAY_MEDIA:
+                return this.generateMediaResponse(parameters);
+
+            case MessageIntent.GET_NEWS:
+                return this.generateNewsResponse(parameters);
 
             case MessageIntent.CHAT:
             default:
@@ -64,18 +73,26 @@ export class PlaceholderLLMService implements ILLMService {
 
     private generateIoTResponse(parameters: Record<string, any>): string {
         const device = parameters.device || "device";
-        const temperature = parameters.temperature;
-        const temperatureUnit = parameters.temperature_unit;
+        const action = parameters.action;
+        const value = parameters.value;
+        const unit = parameters.unit;
+        const location = parameters.location;
 
-        if (temperature !== undefined) {
-            const tempDisplay = temperatureUnit
-                ? `${temperature} ${temperatureUnit}${temperatureUnit === "degree" ? "°" : ""}`
-                : `${temperature}°`;
-
-            return `I understand you want to set your ${device} to ${tempDisplay}. That's a great temperature! Once I'm connected to your smart home system, I'll be able to control your ${device} and other IoT devices seamlessly.`;
-        } else {
-            return `I see you want to control your ${device}. Smart home control is one of my favorite features! Once I'm integrated with your IoT system, I'll help you manage all your connected devices with simple voice commands.`;
+        let actionText = "";
+        
+        if (action && value) {
+            const valueDisplay = unit ? `${value} ${unit}` : value;
+            actionText = ` to ${action} it to ${valueDisplay}`;
+        } else if (action) {
+            actionText = ` to ${action} it`;
+        } else if (value) {
+            const valueDisplay = unit ? `${value} ${unit}` : value;
+            actionText = ` to ${valueDisplay}`;
         }
+
+        const locationText = location ? ` in the ${location}` : "";
+        
+        return `I understand you want to control your ${device}${locationText}${actionText}. That sounds perfect! Once I'm connected to your smart home system, I'll be able to control your ${device} and other IoT devices seamlessly.`;
     }
 
     private generateWebSearchResponse(parameters: Record<string, any>): string {
@@ -83,15 +100,88 @@ export class PlaceholderLLMService implements ILLMService {
         return `I'd be happy to search for information about "${query}"! Once I'm connected to web search services, I'll be able to find the most relevant and up-to-date information for you from across the internet.`;
     }
 
-    private generateReminderResponse(parameters: Record<string, any>): string {
-        const task = parameters.task || parameters.reminder || "your task";
-        const time = parameters.time || parameters.when;
-
-        if (time) {
-            return `Got it! I'll remind you about "${task}" at ${time}. Once my reminder system is set up, I'll make sure you never miss important tasks or appointments.`;
+    private generateTimeResponse(parameters: Record<string, any>): string {
+        const location = parameters.location;
+        
+        if (location) {
+            return `I'd be happy to tell you the current time in ${location}! Once I'm connected to time services, I'll provide accurate local time, date, and timezone information for any location worldwide.`;
         } else {
-            return `I'll help you remember "${task}"! When would you like me to remind you? Once my scheduling system is active, I'll keep track of all your important tasks and reminders.`;
+            return `I'd be glad to tell you the current time! Once my time services are connected, I'll show you the exact time, date, and even help with timezone conversions.`;
         }
+    }
+
+    private generateTimerResponse(parameters: Record<string, any>): string {
+        const duration = parameters.duration;
+        
+        if (duration) {
+            return `Perfect! I'll set a timer for ${duration}. Once my timer system is active, I'll count down and notify you when the time is up. You'll be able to set multiple timers and I'll keep track of them all!`;
+        } else {
+            return `I'd be happy to set a timer for you! How long would you like the timer to run? Once my timing system is connected, I'll handle all your countdown needs.`;
+        }
+    }
+
+    private generateAlarmResponse(parameters: Record<string, any>): string {
+        const datetime = parameters.datetime;
+        const label = parameters.label;
+        
+        let response = "I'll set an alarm for you";
+        
+        if (datetime) {
+            response += ` at ${datetime}`;
+        }
+        
+        if (label) {
+            response += ` labeled "${label}"`;
+        }
+        
+        response += "! Once my alarm system is set up, I'll make sure you wake up or get reminded exactly when you need to. You'll be able to set multiple alarms with custom labels.";
+        
+        return response;
+    }
+
+    private generateMediaResponse(parameters: Record<string, any>): string {
+        const mediaType = parameters.media_type;
+        const mediaTitle = parameters.media_title;
+        const service = parameters.service;
+        
+        let response = "I'd love to help you play";
+        
+        if (mediaType) {
+            response += ` ${mediaType}`;
+        } else {
+            response += " media";
+        }
+        
+        if (mediaTitle) {
+            response += ` "${mediaTitle}"`;
+        }
+        
+        if (service) {
+            response += ` on ${service}`;
+        }
+        
+        response += "! Once I'm connected to your media services, I'll be able to control playback, find content, and manage your entertainment across all your devices.";
+        
+        return response;
+    }
+
+    private generateNewsResponse(parameters: Record<string, any>): string {
+        const topic = parameters.topic;
+        const location = parameters.location;
+        
+        let response = "I'll get you the latest news";
+        
+        if (topic) {
+            response += ` about ${topic}`;
+        }
+        
+        if (location) {
+            response += ` from ${location}`;
+        }
+        
+        response += "! Once I'm connected to news services, I'll provide you with current headlines, breaking news, and updates from reliable sources tailored to your interests.";
+        
+        return response;
     }
 
     private generateHelpResponse(): string {
@@ -99,8 +189,12 @@ export class PlaceholderLLMService implements ILLMService {
 
 🌤️ **Weather**: Ask me about weather conditions anywhere
 🏠 **Smart Home**: Control your IoT devices with voice commands  
+🕐 **Time**: Get current time and date for any location
 🔍 **Web Search**: Find information across the internet
-⏰ **Reminders**: Set and manage your tasks and appointments
+⏲️ **Timers**: Set countdown timers for any duration
+⏰ **Alarms**: Set alarms for specific times with custom labels
+🎵 **Media**: Play music, videos, and podcasts on your devices
+📰 **News**: Get latest news by topic or location
 💬 **Chat**: Have natural conversations about anything
 
 I'm still learning and connecting to services, but I'm excited to help you with all these tasks soon! What would you like to try first?`;

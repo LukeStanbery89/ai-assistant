@@ -1,7 +1,8 @@
 import { WitAIIntentParser } from "../src/service/impl/WitAIIntentParser";
 import { PlaceholderLLMService } from "../src/service/impl/PlaceholderLLMService";
-import { MessageIntent, WitAIResponse } from "../../shared/types";
-import { mapWitAIResponse, validateWitAIResponse } from "../src/service/mapper/WitAIResponseMapper";
+import { MessageIntent, WitAIResponse, IntentParserConfig } from "../../shared/types";
+import { mapWitAIResponse, validateWitAIResponse, initializeIntentMapping } from "../src/service/mapper/WitAIResponseMapper";
+import { IConfigurationLoader } from "../src/service/IConfigurationLoader";
 
 // Mock fetch for testing
 global.fetch = jest.fn();
@@ -9,14 +10,49 @@ global.fetch = jest.fn();
 describe("Intent Parser System", () => {
     let intentParser: WitAIIntentParser;
     let llmService: PlaceholderLLMService;
+    let mockConfigLoader: jest.Mocked<IConfigurationLoader>;
+    
+    const mockConfig: IntentParserConfig = {
+        intents: {
+            get_weather: {
+                description: "Get weather information",
+                entities: ["wit/location"],
+                examples: ["How's the weather in Chicago?"]
+            },
+            iot_control: {
+                description: "Control IoT devices",
+                entities: ["custom/device", "custom/value"],
+                examples: ["Set thermostat to 72"]
+            },
+            chat: {
+                description: "General chat",
+                entities: [],
+                examples: ["Hello"]
+            }
+        },
+        entities: {},
+        traits: {}
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
         process.env.WIT_AI_ACCESS_TOKEN = "test-token";
         process.env.INTENT_PARSER_TIMEOUT = "3000";
         process.env.INTENT_CONFIDENCE_THRESHOLD = "0.7";
+        
+        // Create mock configuration loader
+        mockConfigLoader = {
+            loadIntentParserConfig: jest.fn().mockResolvedValue(mockConfig),
+            getAvailableIntents: jest.fn().mockResolvedValue(Object.keys(mockConfig.intents)),
+            getIntentConfig: jest.fn().mockImplementation((name) => Promise.resolve(mockConfig.intents[name])),
+            isHealthy: jest.fn().mockResolvedValue(true),
+            getVersion: jest.fn().mockReturnValue("mock-v1.0.0")
+        };
+        
+        // Initialize mapping with mock config
+        initializeIntentMapping(mockConfig);
 
-        intentParser = new WitAIIntentParser();
+        intentParser = new WitAIIntentParser(mockConfigLoader);
         llmService = new PlaceholderLLMService();
     });
 
@@ -65,7 +101,7 @@ describe("Intent Parser System", () => {
                     {
                         confidence: 0.9996766897730514,
                         id: "2033796803776155",
-                        name: "weather",
+                        name: "get_weather",
                     },
                 ],
                 text: "How's the weather in Chicago?",
@@ -87,7 +123,7 @@ describe("Intent Parser System", () => {
 
             const result = await intentParser.parseIntent("How's the weather in Chicago?");
 
-            expect(result.intent).toBe(MessageIntent.WEATHER);
+            expect(result.intent).toBe(MessageIntent.GET_WEATHER);
             expect(result.confidence).toBeCloseTo(0.9996766897730514);
             expect(result.parameters.location).toBe("Chicago");
             expect(result.parameters.location_coordinates).toEqual({
@@ -170,7 +206,7 @@ describe("Intent Parser System", () => {
                     {
                         confidence: 0.5, // Below threshold
                         id: "12345",
-                        name: "weather",
+                        name: "get_weather",
                     },
                 ],
                 text: "unclear message",
@@ -202,7 +238,7 @@ describe("Intent Parser System", () => {
 
         it("should fallback when no token is provided", async () => {
             delete process.env.WIT_AI_ACCESS_TOKEN;
-            const parserWithoutToken = new WitAIIntentParser();
+            const parserWithoutToken = new WitAIIntentParser(mockConfigLoader);
 
             const result = await parserWithoutToken.parseIntent("test message");
 
@@ -212,21 +248,21 @@ describe("Intent Parser System", () => {
 
         it("should report unhealthy when no token is provided", async () => {
             delete process.env.WIT_AI_ACCESS_TOKEN;
-            const parserWithoutToken = new WitAIIntentParser();
+            const parserWithoutToken = new WitAIIntentParser(mockConfigLoader);
 
             const isHealthy = await parserWithoutToken.isHealthy();
             expect(isHealthy).toBe(false);
         });
 
         it("should return correct version", () => {
-            expect(intentParser.getVersion()).toBe("wit-ai-v1.0.0");
+            expect(intentParser.getVersion()).toBe("wit-ai-v2.0.0-config");
         });
     });
 
     describe("PlaceholderLLMService", () => {
         it("should generate weather response", async () => {
             const response = await llmService.generateResponse(
-                MessageIntent.WEATHER,
+                MessageIntent.GET_WEATHER,
                 { location: "Chicago" },
                 "How's the weather in Chicago?",
                 undefined,
@@ -239,7 +275,7 @@ describe("Intent Parser System", () => {
         it("should generate IoT control response", async () => {
             const response = await llmService.generateResponse(
                 MessageIntent.IOT_CONTROL,
-                { device: "thermostat", temperature: 72 },
+                { device: "thermostat", value: 72, unit: "degrees" },
                 "Set the thermostat to 72 degrees",
                 undefined,
             );
@@ -261,15 +297,13 @@ describe("Intent Parser System", () => {
 
         it("should generate help response", async () => {
             const response = await llmService.generateResponse(
-                MessageIntent.HELP,
+                MessageIntent.CHAT,
                 {},
                 "help me",
                 undefined,
             );
 
-            expect(response).toContain("help");
-            expect(response).toContain("weather");
-            expect(response).toContain("Smart Home");
+            expect(response).toContain("help me");
         });
 
         it("should always report healthy", async () => {

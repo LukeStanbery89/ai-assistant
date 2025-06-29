@@ -4,20 +4,39 @@ import {
     ParsedEntity,
     MessageIntent,
     WitAIEntity,
+    IntentParserConfig,
 } from "../../../../shared/types";
 import { logger } from "../../utils";
 
 /**
  * Maps Wit.AI intent names to our internal MessageIntent enum
+ * This is now populated dynamically from configuration
  */
-const WIT_AI_INTENT_MAPPING: Record<string, MessageIntent> = {
-    weather: MessageIntent.WEATHER,
-    iot_control: MessageIntent.IOT_CONTROL,
-    web_search: MessageIntent.WEB_SEARCH,
-    reminder: MessageIntent.REMINDER,
-    chat: MessageIntent.CHAT,
-    help: MessageIntent.HELP,
-};
+let WIT_AI_INTENT_MAPPING: Record<string, MessageIntent> = {};
+
+/**
+ * Initialize the intent mapping from configuration
+ */
+export function initializeIntentMapping(config: IntentParserConfig): void {
+    WIT_AI_INTENT_MAPPING = {};
+    
+    // Map each configured intent to its corresponding MessageIntent enum value
+    for (const intentName of Object.keys(config.intents)) {
+        // Convert intent name to MessageIntent enum value
+        const enumValue = intentName.toUpperCase() as keyof typeof MessageIntent;
+        if (MessageIntent[enumValue]) {
+            WIT_AI_INTENT_MAPPING[intentName] = MessageIntent[enumValue];
+        } else {
+            logger.warn(`Unknown intent in configuration: ${intentName}`);
+            WIT_AI_INTENT_MAPPING[intentName] = MessageIntent.CHAT;
+        }
+    }
+    
+    logger.info("Intent mapping initialized", {
+        mappingCount: Object.keys(WIT_AI_INTENT_MAPPING).length,
+        mappings: WIT_AI_INTENT_MAPPING,
+    });
+}
 
 /**
  * Maps a Wit.AI response to our internal IntentParseResult format
@@ -86,15 +105,78 @@ function extractEntities(witEntities: Record<string, WitAIEntity[]>): ParsedEnti
         // Take the first (highest confidence) entity
         const entity = entityArray[0];
 
-        // Process different entity types
-        if (entityKey.includes("iot_device")) {
+        // Process different entity types based on entity key patterns
+        if (entityKey.includes("custom/device") || entityKey.includes("iot_device")) {
             entities.push({
                 name: "device",
-                value: entity.value,
+                value: entity.value || entity.body,
                 confidence: entity.confidence,
                 type: "device",
             });
-        } else if (entityKey.includes("wit$temperature")) {
+        } else if (entityKey.includes("custom/action")) {
+            entities.push({
+                name: "action",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/value")) {
+            entities.push({
+                name: "value",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "number",
+            });
+        } else if (entityKey.includes("custom/unit")) {
+            entities.push({
+                name: "unit",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/query")) {
+            entities.push({
+                name: "query",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/label")) {
+            entities.push({
+                name: "label",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/media_type")) {
+            entities.push({
+                name: "media_type",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/media_title")) {
+            entities.push({
+                name: "media_title",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/service")) {
+            entities.push({
+                name: "service",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("custom/topic")) {
+            entities.push({
+                name: "topic",
+                value: entity.value || entity.body,
+                confidence: entity.confidence,
+                type: "text",
+            });
+        } else if (entityKey.includes("wit$temperature") || entityKey.includes("wit/temperature")) {
             entities.push({
                 name: "temperature",
                 value: entity.value,
@@ -102,7 +184,7 @@ function extractEntities(witEntities: Record<string, WitAIEntity[]>): ParsedEnti
                 type: "temperature",
                 unit: entity.unit || "degree",
             });
-        } else if (entityKey.includes("wit$location")) {
+        } else if (entityKey.includes("wit$location") || entityKey.includes("wit/location")) {
             const locationValue = entity.resolved?.values?.[0]?.name || entity.body;
             const coordinates = entity.resolved?.values?.[0]?.coords;
 
@@ -113,6 +195,21 @@ function extractEntities(witEntities: Record<string, WitAIEntity[]>): ParsedEnti
                 type: "location",
                 coordinates,
                 resolvedValues: entity.resolved?.values,
+            });
+        } else if (entityKey.includes("wit$datetime") || entityKey.includes("wit/datetime")) {
+            entities.push({
+                name: "datetime",
+                value: entity.value,
+                confidence: entity.confidence,
+                type: "date",
+            });
+        } else if (entityKey.includes("wit$duration") || entityKey.includes("wit/duration")) {
+            entities.push({
+                name: "duration",
+                value: entity.value,
+                confidence: entity.confidence,
+                type: "text",
+                unit: entity.unit,
             });
         } else {
             // Generic entity handling
@@ -144,6 +241,14 @@ function entitiesToParameters(entities: ParsedEntity[]): Record<string, any> {
 
         if (entity.type === "location" && entity.coordinates) {
             parameters[`${entity.name}_coordinates`] = entity.coordinates;
+        }
+        
+        if (entity.unit) {
+            parameters[`${entity.name}_unit`] = entity.unit;
+        }
+        
+        if (entity.resolvedValues) {
+            parameters[`${entity.name}_resolved`] = entity.resolvedValues;
         }
     }
 

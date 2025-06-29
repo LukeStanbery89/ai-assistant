@@ -1,12 +1,13 @@
-import { injectable } from "tsyringe";
+import { injectable, inject } from "tsyringe";
 import { IIntentParser } from "../IIntentParser";
+import { IConfigurationLoader } from "../IConfigurationLoader";
 import {
     IntentParseResult,
     UserContext,
     WitAIResponse,
     MessageIntent,
 } from "../../../../shared/types";
-import { mapWitAIResponse, validateWitAIResponse } from "../mapper/WitAIResponseMapper";
+import { mapWitAIResponse, validateWitAIResponse, initializeIntentMapping } from "../mapper/WitAIResponseMapper";
 import { logger } from "../../utils";
 
 @injectable()
@@ -15,8 +16,11 @@ export class WitAIIntentParser implements IIntentParser {
     private readonly accessToken: string;
     private readonly timeout: number;
     private readonly confidenceThreshold: number;
+    private initialized = false;
 
-    constructor() {
+    constructor(
+        @inject("IConfigurationLoader") private configLoader: IConfigurationLoader,
+    ) {
         this.accessToken = process.env.WIT_AI_ACCESS_TOKEN || "";
         this.timeout = parseInt(process.env.INTENT_PARSER_TIMEOUT || "3000");
         this.confidenceThreshold = parseFloat(process.env.INTENT_CONFIDENCE_THRESHOLD || "0.7");
@@ -24,9 +28,15 @@ export class WitAIIntentParser implements IIntentParser {
         if (!this.accessToken) {
             logger.warn("WIT_AI_ACCESS_TOKEN not configured - intent parsing will use fallback");
         }
+        
+        // Initialize the intent mapping on construction
+        this.initializeMapping();
     }
 
     async parseIntent(message: string, context?: UserContext): Promise<IntentParseResult> {
+        // Ensure mapping is initialized
+        await this.ensureInitialized();
+        
         if (!this.accessToken) {
             logger.debug("No Wit.AI token configured, falling back to chat intent");
             return this.createFallbackResult(message);
@@ -70,6 +80,12 @@ export class WitAIIntentParser implements IIntentParser {
     }
 
     async isHealthy(): Promise<boolean> {
+        // Check configuration health first
+        const configHealthy = await this.configLoader.isHealthy();
+        if (!configHealthy) {
+            return false;
+        }
+        
         if (!this.accessToken) {
             return false;
         }
@@ -87,7 +103,36 @@ export class WitAIIntentParser implements IIntentParser {
     }
 
     getVersion(): string {
-        return "wit-ai-v1.0.0";
+        return "wit-ai-v2.0.0-config";
+    }
+    
+    /**
+     * Initialize the intent mapping from configuration
+     */
+    private async initializeMapping(): Promise<void> {
+        try {
+            const config = await this.configLoader.loadIntentParserConfig();
+            initializeIntentMapping(config);
+            this.initialized = true;
+            
+            logger.info("WitAI intent parser initialized with configuration", {
+                intentCount: Object.keys(config.intents).length,
+            });
+        } catch (error) {
+            logger.error("Failed to initialize intent mapping", {
+                error: error instanceof Error ? error.message : "Unknown error",
+            });
+            // Don't throw here - we'll fall back to chat intent
+        }
+    }
+    
+    /**
+     * Ensure the intent mapping is initialized before processing
+     */
+    private async ensureInitialized(): Promise<void> {
+        if (!this.initialized) {
+            await this.initializeMapping();
+        }
     }
 
     /**
