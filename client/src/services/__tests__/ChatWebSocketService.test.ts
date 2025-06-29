@@ -16,7 +16,7 @@ class MockWebSocket {
 
     constructor(public url: string) {}
 
-    send(data: string) {
+    send(_data: string) {
         if (this.readyState !== MockWebSocket.OPEN) {
             throw new Error('WebSocket is not open');
         }
