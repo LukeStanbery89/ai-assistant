@@ -24,8 +24,20 @@
         - [x] Set up test coverage
         - [x] Set up Husky + pre-push hook
     - [x] Implement prompt endpoint
+    - [x] Implement "intent" parser system, which parses the "intent" (weather, IOT, web search, etc.) and inputs from a user's prompt and delegates task to the appropriate Task Module. The intent parser works by forwarding the prompt to Wit.AI, which uses AI to determine which Task Module to invoke, and what inputs it requires to perform the user's task.
+        - [x] Created pluggable IIntentParser interface with WitAIIntentParser implementation
+        - [x] Implemented Wit.AI integration with proper error handling and fallbacks
+        - [x] Created ILLMService interface with PlaceholderLLMService for human-like responses
+        - [x] Integrated intent parsing and LLM response generation into ConversationService
+        - [x] Added comprehensive test coverage for all intent parser components
+        - [x] Configured environment variables for Wit.AI token and thresholds
+        - [x] Successfully handles examples like:
+            - "Set the thermostat to 72 degrees" → intent: iot_control, parameters: {device: "thermostat", temperature: 72}
+            - "How's the weather in Chicago?" → intent: weather, parameters: {location: "Chicago", coordinates: {...}}
+            - "How's the weather?" → intent: weather (would need user context for location)
+        - [x] Built with TSyringe DI for easy swapping to local models in the future
     - [ ] Integrate with LLM API
-    - [ ] Return responses to client
+    - [x] Return responses to client
 - [ ] Containerize the app with Docker
 - [ ] Define and document JSON schemas for user prompt and server response payloads
 - [ ] Specify and document API endpoints (REST/SSE) with request/response examples
@@ -54,7 +66,7 @@
     - [ ] Handle TTS playback and errors
 - [ ] Allow toggling between text and voice input modes
 - [ ] Display prompt history and server responses in the UI
-- [ ] Add connection status and error indicators
+- [x] Add connection status and error indicators
 - [ ] Add user/session management
     - [ ] Design user/session schema
     - [ ] Implement user registration/login
@@ -86,6 +98,7 @@
 - [ ] Ensure 85%+ line test coverage
 
 ## Phase 4: Feature Rich
+- [ ] Replace the Intent Parser's Wit.AI integration with a specialized pre-trained model running locally.
 - [ ] Integrate with MCP servers for additional context/data retrieval
 - [ ] Add support for IoT (smart home) device control
 - [ ] Implement weather updates, reminders, alarms, and lists

@@ -57,6 +57,9 @@ Server configuration can be controlled via environment variables (see `server/.e
 - `NODE_ENV` - Environment mode (development, production)
 - `LOG_LEVEL` - Logging level: error, warn, info, debug (default: info)
 - `ENABLE_FILE_LOGGING` - Enable file logging to logs/ directory (default: false)
+- `WIT_AI_ACCESS_TOKEN` - Wit.AI access token for intent parsing (optional)
+- `INTENT_PARSER_TIMEOUT` - Timeout for intent parsing API calls in ms (default: 3000)
+- `INTENT_CONFIDENCE_THRESHOLD` - Minimum confidence for intent classification (default: 0.7)
 
 ## Architecture Overview
 
@@ -74,6 +77,16 @@ This is a TypeScript monorepo for an AI assistant with multiple client interface
   - Optional file logging controlled by `ENABLE_FILE_LOGGING=true` environment variable
   - Configurable log levels via `LOG_LEVEL` environment variable (info, debug, warn, error)
   - JSON format for file logs, human-readable format for console
+- **Intent Parser System**: Pluggable intent analysis with:
+  - Wit.AI integration for natural language understanding
+  - Entity extraction (locations, devices, temperatures, etc.)
+  - Confidence-based fallback to chat mode
+  - Easy swapping between providers via dependency injection
+  - Comprehensive error handling and graceful degradation
+- **LLM Response Generation**: Placeholder service with:
+  - Context-aware responses based on parsed intent and entities
+  - Human-like conversational patterns
+  - Extensible for future real LLM integration (OpenAI, Anthropic, local models)
 
 ### Client Types
 

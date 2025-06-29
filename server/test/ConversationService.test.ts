@@ -1,11 +1,38 @@
 import { ConversationService } from "../src/service/impl/ConversationService";
-import { ConversationCommand, MessageIntent } from "../../shared/types";
+import { ConversationCommand, MessageIntent, IntentParseResult } from "../../shared/types";
+import { IIntentParser } from "../src/service/IIntentParser";
+import { ILLMService } from "../src/service/ILLMService";
+
+// Mock implementations
+const mockIntentParser: jest.Mocked<IIntentParser> = {
+    parseIntent: jest.fn(),
+    isHealthy: jest.fn(),
+    getVersion: jest.fn(),
+};
+
+const mockLLMService: jest.Mocked<ILLMService> = {
+    generateResponse: jest.fn(),
+    isHealthy: jest.fn(),
+    getVersion: jest.fn(),
+};
 
 describe("ConversationService", () => {
     let conversationService: ConversationService;
 
     beforeEach(() => {
-        conversationService = new ConversationService();
+        jest.clearAllMocks();
+        conversationService = new ConversationService(mockIntentParser, mockLLMService);
+
+        // Set up default mock responses
+        mockIntentParser.parseIntent.mockResolvedValue({
+            intent: MessageIntent.CHAT,
+            parameters: {},
+            confidence: 0.8,
+            entities: [],
+            sentiment: "neutral",
+        });
+
+        mockLLMService.generateResponse.mockResolvedValue("Hello! How can I help you today?");
     });
 
     describe("processMessage", () => {
@@ -34,21 +61,56 @@ describe("ConversationService", () => {
         });
 
         it("should respond with weather message for weather queries", async () => {
+            // Set up weather intent response
+            mockIntentParser.parseIntent.mockResolvedValue({
+                intent: MessageIntent.WEATHER,
+                parameters: { location: "Chicago" },
+                confidence: 0.95,
+                entities: [
+                    { name: "location", value: "Chicago", confidence: 0.95, type: "location" },
+                ],
+                sentiment: "neutral",
+            });
+            mockLLMService.generateResponse.mockResolvedValue(
+                "I'd love to help you check the weather in Chicago! Once I'm connected to a weather service, I'll be able to provide real-time forecasts.",
+            );
+
             const command: ConversationCommand = {
                 sessionId: "test-session",
-                message: "What is the weather like?",
+                message: "What is the weather like in Chicago?",
                 clientType: "browser",
                 userId: "test-user",
             };
 
             const response = await conversationService.processMessage(command);
 
-            expect(response.content).toBe(
-                "I can help with weather information, but I need to be connected to a weather service first.",
+            expect(mockIntentParser.parseIntent).toHaveBeenCalledWith(
+                command.message,
+                command.context,
             );
+            expect(mockLLMService.generateResponse).toHaveBeenCalledWith(
+                MessageIntent.WEATHER,
+                { location: "Chicago" },
+                command.message,
+                command.context,
+            );
+            expect(response.metadata?.intent).toBe(MessageIntent.WEATHER);
+            expect(response.metadata?.confidence).toBe(0.95);
         });
 
         it("should respond with help message for help queries", async () => {
+            // Set up help intent response
+            mockIntentParser.parseIntent.mockResolvedValue({
+                intent: MessageIntent.HELP,
+                parameters: {},
+                confidence: 0.9,
+                entities: [],
+                sentiment: "neutral",
+            });
+            mockLLMService.generateResponse.mockResolvedValue(
+                "I'm your AI assistant and I'm here to help! Here's what I can do: weather, smart home control, web search, reminders, and chat.",
+            );
+
             const command: ConversationCommand = {
                 sessionId: "test-session",
                 message: "help me",
@@ -58,12 +120,21 @@ describe("ConversationService", () => {
 
             const response = await conversationService.processMessage(command);
 
-            expect(response.content).toBe(
-                "I'm an AI assistant that can help with various tasks. Try asking me about the weather, or just have a conversation!",
+            expect(mockIntentParser.parseIntent).toHaveBeenCalledWith(
+                command.message,
+                command.context,
             );
+            expect(mockLLMService.generateResponse).toHaveBeenCalledWith(
+                MessageIntent.HELP,
+                {},
+                command.message,
+                command.context,
+            );
+            expect(response.metadata?.intent).toBe(MessageIntent.HELP);
         });
 
         it("should provide default response for unknown messages", async () => {
+            // Default mock is already set up for CHAT intent
             const command: ConversationCommand = {
                 sessionId: "test-session",
                 message: "random message",
@@ -73,9 +144,18 @@ describe("ConversationService", () => {
 
             const response = await conversationService.processMessage(command);
 
-            expect(response.content).toBe(
-                "You said: \"random message\". I'm a simple AI assistant and I'm still learning. How can I help you?",
+            expect(mockIntentParser.parseIntent).toHaveBeenCalledWith(
+                command.message,
+                command.context,
             );
+            expect(mockLLMService.generateResponse).toHaveBeenCalledWith(
+                MessageIntent.CHAT,
+                {},
+                command.message,
+                command.context,
+            );
+            expect(response.metadata?.intent).toBe(MessageIntent.CHAT);
+            expect(response.content).toBe("Hello! How can I help you today?");
         });
 
         it("should store conversation history", async () => {
